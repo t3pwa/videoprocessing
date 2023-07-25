@@ -1,0 +1,23 @@
+# cat=platform; type=options[LocalFFmpeg,CloudConvert]; label=Converter:Define how videos should be converted. LocalFFmpeg requires you to have ffmpeg installed on your webserver. CloudConvert requires an api key and isn't free if you convert a lot of videos but will keep the load off of your webserver.
+converter = LocalFFmpeg
+
+# cat=platform; type=string; label=CloudConvert Api-Key:If you want to use CloudConvert than you'll need to define this.
+cloudConvertApiKey =
+
+# cat=platform; type=boolean; label=FDK AAC available:Enable this if your local ffmpeg instance can encode using libfdk_aac. This encoder creates noticeably better audio quality especially at lower bitrates. This options is ignored if CloudConvert is used since they have fdk available and not using it would be a waste.
+fdkAvailable = 0
+
+# cat=platform; type=boolean; label=Enable test element:This will add a content element to your instance with which you can easily test different video settings
+testElement = 0
+
+# cat=default settings; type=options[h264:ultrafast (for testing)=0,h264:medium=1,h264:slow (default)=2,h264:veryslow=3,vp9:speed-2，h264:slow (very good)=4,vp9:speed-1，h264:veryslow (if conversion time does not matter to you)=5]; label=Performance Preset:Quickly change the tradeof between conversion speed and quality/size. VP9 may take a very long time to encode but saves bandwidth and increases quality at the same time. If enabled, h264 will be encoded first so you'll quickly have a video to work with while the vp9 version still encodes. If processing time and storage space for 2 videos instead of 1 is not a problem for you: definitely enable it.
+preset = 2
+
+# cat=default settings; type=options[2.0: ~240p (only useful in specific areas such as animated thumbnails)=2.0,2.1: ~360p (this is actually recommended by google for video on demand without multiple resolutions)=2.1,3.0: ~480p (my recommendation as it saves bandwidth，maximises compatibility and is likely about the size of your inline player)=3.0,3.1: ~720p (good tradeof between size，fidelity and compatibility especially if users use fullscreen a lot)=3.1,4.0: ~1080p (looks great but may create problems for people with lower bandwidth and might introduce scaling artifacts if viewed in a small player)=4.0]; label=Decoder level:Here you can define how complex video streams are supposed to get.
+level = 3.0
+
+# cat=default settings; type=options[50% ~crf 30.5=0.5,60% ~crf 28.0 (if you need to save bandwidth this might still be ok)=0.6,70% ~crf 25.5=0.7,80% ~crf 23.0 (recommended)=0.8,90% crf ~20.5=0.9,100% ~crf 18.0=1.0]; label=Video Quality:Defines the video quality. It is roughly based on the jpeg quality metric. The crf value is the one that will be used for h264. However: there is also a -maxrate defined which is based on resolution and framerate to keep the bitrate from running away. VP9 will get's a totally different set of parameters but the quality should be comparable.
+videoQuality = 0.8
+
+# cat=default settings; type=options[50% ~60 kbit/s (HE-AAC，might still be fine if fdk is enabled)=0.5,60% ~80 kbit/s (HE-AAC)=0.6,70% ~102 kbit/s=0.7,80% ~128 kbit/s (recommended)=0.8,90% ~158 kbit/s=0.9,100% ~192 kbit/s=1.0]; label=Audio Quality:Defines the audio quality. The bitrate example a rough estimate on the aac bitrate which is just for orientation purposes. The actually bitrate is variable if fdk is enabled. The aac preset will resort to aac-he when the bitrate is <= 80 kbit/s so lower qualities might not sound as bad as you think, again, if fdk is available. webm/vp9 video will use opus audio which always uses variable bitrate and it is defined to be up to 25% lower since the codec is more efficient.
+audioQuality = 0.8

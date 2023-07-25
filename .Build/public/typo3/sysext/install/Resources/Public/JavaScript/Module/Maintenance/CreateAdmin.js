@@ -1,0 +1,13 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+define(["require","exports","TYPO3/CMS/Backend/Modal","TYPO3/CMS/Backend/Notification","TYPO3/CMS/Core/Ajax/AjaxRequest","../../Router","../PasswordStrength","../AbstractInteractableModule"],(function(e,t,s,a,n,r,i,o){"use strict";class d extends o.AbstractInteractableModule{constructor(){super(...arguments),this.selectorAdminCreateButton=".t3js-createAdmin-create"}initialize(e){this.currentModal=e,this.getData(),e.on("click",this.selectorAdminCreateButton,e=>{e.preventDefault(),this.create()}),e.on("click",".t3-install-form-password-strength",()=>{i.initialize(".t3-install-form-password-strength")})}getData(){const e=this.getModalBody();new n(r.getUrl("createAdminGetData")).get({cache:"no-cache"}).then(async t=>{const n=await t.resolve();!0===n.success?(e.empty().append(n.html),s.setButtons(n.buttons)):a.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")},t=>{r.handleAjaxError(t,e)})}create(){this.setModalButtonsState(!1);const e=this.getModalBody(),t={install:{action:"createAdmin",token:this.getModuleContent().data("create-admin-token"),userName:this.findInModal(".t3js-createAdmin-user").val(),userPassword:this.findInModal(".t3js-createAdmin-password").val(),userPasswordCheck:this.findInModal(".t3js-createAdmin-password-check").val(),userEmail:this.findInModal(".t3js-createAdmin-email").val(),userSystemMaintainer:this.findInModal(".t3js-createAdmin-system-maintainer").is(":checked")?1:0}};this.getModuleContent().find(":input").prop("disabled",!0),new n(r.getUrl()).post(t).then(async e=>{const t=await e.resolve();!0===t.success&&Array.isArray(t.status)?t.status.forEach(e=>{a.showMessage(e.title,e.message,e.severity)}):a.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")},t=>{r.handleAjaxError(t,e)}).finally(()=>{this.setModalButtonsState(!0),this.getModuleContent().find(":input").prop("disabled",!1),this.findInModal(".t3js-createAdmin-user").val(""),this.findInModal(".t3js-createAdmin-password").val(""),this.findInModal(".t3js-createAdmin-password-check").val(""),this.findInModal(".t3js-createAdmin-email").val(""),this.findInModal(".t3js-createAdmin-system-maintainer").prop("checked",!1)})}}return new d}));

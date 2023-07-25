@@ -1,0 +1,84 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:c="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      xmlns:video="http://typo3.org/ns/Faeb/Videoprocessing/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default"/>
+
+<f:section name="Main">
+
+    <f:be.infobox title="Note on error handling">
+        Error handling is a bit of a mess right now.
+        <br>
+        The local ffmpeg implementation will never state that there is an error,
+        it'll just retry forever and get stuck, you'll need to remove the task if it never starts.
+        <br>
+        On the other hand, the CloudConvert implementation <em>caches</em> error states so if there is an error
+        you may need to truncate <code>tx_video_cloudconvert_process</code> in addition to removing the task to retry.
+        At least it doesn't get stuck on a single failing task…
+        <br>
+        I haven't had time to fix those issues yet.
+    </f:be.infobox>
+
+    <div class="panel panel-default">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 13em">create date</th>
+                    <th style="width: 6em">status</th>
+                    <th>file</th>
+                    <th>configuration</th>
+                    <th style="width: 10em"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{tasks}" as="task">
+                    <tr class="{f:if(condition: '{task.status} == \'failed\'', then: 'danger')}">
+                        <td>
+                            {task.crdate -> f:format.date(format: 'l d. M Y')}
+                            {task.crdate -> f:format.date(format: 'H:i:s')}
+                        </td>
+                        <td style="text-align: right">
+                            {task.status}<br />
+                            <f:if condition="{task.status} == 'new'">
+                                <video:progress subject="{task.uid}" />
+                            </f:if>
+                        </td>
+                        <td>
+                            {task.file_identifier}
+                        </td>
+                        <td>
+                            <dl class="dl-horizontal" style="margin: 0">
+                                <f:for each="{task.configuration}" as="configuration" key="key">
+                                    <strong>{key}</strong> {configuration -> f:format.json()},
+                                </f:for>
+                            </dl>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-default" title="Info"
+                                   onclick="top.TYPO3.InfoWindow.showItem('_FILE', {task.file_combi_ident -> f:format.json()});return false;">
+                                    <c:icon identifier="actions-document-info" />
+                                </a>
+                                <f:variable name="isNew" value="{f:if(condition: '{task.status} == \'new\' && {task.lastUpdate} == 0', then: 1)}"/>
+                                <f:variable name="isFailed" value="{f:if(condition: '{task.status} == \'failed\'', then: 1)}"/>
+                                <f:variable name="isFinished" value="{f:if(condition: '{task.status} == \'finished\'', then: 1)}"/>
+                                <f:if condition="{isNew} || {isFailed} || {isFinished}">
+                                    <f:form action="delete" class="btn-group">
+                                        <f:form.hidden name="task" value="{task.uid}" />
+                                        <button class="btn btn-default" title="Delete">
+                                            <c:icon identifier="actions-edit-delete" />
+                                        </button>
+                                    </f:form>
+                                </f:if>
+                            </div>
+                        </td>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
+    </div>
+
+</f:section>
+
+</html>

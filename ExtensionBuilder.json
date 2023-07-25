@@ -1,0 +1,35 @@
+{
+    "modules": [],
+    "properties": {
+        "backendModules": [],
+        "description": "",
+        "emConf": {
+            "category": "plugin",
+            "custom_category": "",
+            "dependsOn": "typo3 => 11.5.0-11.5.99\n",
+            "disableLocalization": false,
+            "disableVersioning": false,
+            "generateDocumentationTemplate": false,
+            "generateEditorConfig": false,
+            "generateEmptyGitRepository": false,
+            "sourceLanguage": "en",
+            "state": "stable",
+            "targetVersion": "11.5.0-11.5.99",
+            "version": "1.0.0"
+        },
+        "extensionKey": "videoprocessing",
+        "name": "Videoprocessing",
+        "originalExtensionKey": "",
+        "originalVendorName": "",
+        "persons": [],
+        "plugins": [],
+        "vendorName": "Faeb"
+    },
+    "wires": [],
+    "storagePath": "\/var\/www\/vhosts\/kukurtihar.com\/t3v11.kukurtihar.com\/extensions\/",
+    "log": {
+        "last_modified": "2023-07-21 01:15",
+        "extension_builder_version": "v11.0.10",
+        "be_user": " (1)"
+    }
+}
