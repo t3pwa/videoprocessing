@@ -64,11 +64,17 @@ class VideoTagRenderer implements FileRendererInterface
     {
         $attributes = [];
 
+        // var_dump("renderer options autoplay?", $options['autoplay']);
         // var_dump($width, $height);
         // var_dump($file->getProperty('width'), $file->getProperty('height') );
 
         $width = $width ?: $file->getProperty('width');
         $height = $height ?: $file->getProperty('height');
+
+        /*
+        var_dump ( "file prop autolplay", $file->getProperty('autoplay') );
+        var_dump ( "file prop title", $file->getProperty('title') );
+        */
 
         // ToDo: remove "m" from width and height
         if (preg_match('/m$/', $width)) {
@@ -84,39 +90,56 @@ class VideoTagRenderer implements FileRendererInterface
 
         $attributes['width'] = 'width="' . round($width) . '"';
         $attributes['height'] = 'height="' . round($height) . '"';
-        $attributes['class'] = 'class="img-fluid w-100"';
+        // $attributes['class'] = 'class="img-fluid w-100"';
+
+        // TODO if in ffrontend
+        /*
+        if ( array_key_exists('autoplay', $options) ) {
+            var_dump($options['autoplay']);
+        }
+        */
+        // var_dump ( "file prop autoplay", $file->getProperty('autoplay') );
+
 
 
         $autoplay = intval($options['autoplay'] ?? $file->getProperty('autoplay'));
+        // what does this even do?
         self::dispatch('autoplay', [&$autoplay], func_get_args());
+        // var_dump("autoplay", $autoplay);
 
-        if ($autoplay > 0) {
+        // Options only available per default in TCA flexform settings.options in test content element
+        // if ($autoplay > 0) {
+        if ($file->getProperty('autoplay') > 0) {
             $attributes['autoplay'] = 'autoplay';
         }
 
-        if ($options['muted'] ?? $autoplay > 0) {
+//        if ($options['muted'] ?? $autoplay > 0) {
+        if ($file->getProperty('autoplay') > 0) {
             $attributes['muted'] = 'muted';
         }
 
         // if ($options['loop'] ?? $autoplay > 1) {
+        if ($file->getProperty('autoplay') > 1) {
             $attributes['loop'] = 'loop';
-        // }
+        }
 
-        if ($options['controls'] ?? $autoplay < 3) {
+        // if ($options['controls'] ?? $autoplay < 3) {
+        if ($file->getProperty('autoplay') < 3) {
             $attributes['controls'] = 'controls';
         }
 
-        // if ($options['playsinline'] ?? $autoplay >= 1) {
+//        if ($options['playsinline'] ?? $autoplay >= 1) {
+        if ($file->getProperty('autoplay') >= 1) {
             $attributes['playsinline'] = 'playsinline';
-        // }
-
-
+        }
 
         foreach ($this->getAttributes() as $key) {
             if (!empty($options[$key])) {
                 $attributes[$key] = $key . '="' . htmlspecialchars($options[$key]) . '"';
             }
         }
+
+        // var_dump("attributes", $attributes);
 
         [$sources, $videos] = $this->buildSources($file, $options, $usedPathsRelativeToCurrentScript);
         self::dispatch('beforeTag', [&$attributes, &$sources], func_get_args());
@@ -126,11 +149,18 @@ class VideoTagRenderer implements FileRendererInterface
             // TODO Process Render refactoring
             // $sources[] = ProgressViewHelper::renderHtml($videos);
 
-            $tag = sprintf('is rendering');
-            $tag = sprintf('<div %s>%s</div>', implode(' ', $attributes), implode('', $sources));
+            $tag = sprintf('is processing');
+            $tag .= sprintf('<div %s>%s</div>', implode(' ', $attributes), implode('', $sources));
             self::dispatch('afterProgressTag', [&$tag, $attributes, $sources], func_get_args());
         } else {
-            $tag = sprintf('<video %s>%s</video>', implode(' ', $attributes), implode('', $sources));
+            $tag = sprintf('<span style="font-color: #fff;">finished processing</span>');
+
+            // var_dump("video tag renderer attributes for video tag", $attributes);
+
+            $tag .= sprintf('<video %s>%s</video>',
+                implode(' ', $attributes),
+                implode('', $sources)
+            );
             self::dispatch('afterTag', [&$tag, $attributes, $sources], func_get_args());
         }
 

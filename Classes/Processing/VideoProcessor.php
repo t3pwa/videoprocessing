@@ -79,11 +79,13 @@ class VideoProcessor implements ProcessorInterface
         if ($storedTask === null || $storedTask->getStatus() === VideoProcessingTask::STATUS_FINISHED) {
 
             try {
+                var_dump("try VideoProcessor Task");
                 $task->setStatus(VideoProcessingTask::STATUS_NEW);
                 // $task->setStatus(VideoProcessingTask::STATUS_FAILED);
-
+                var_dump("try VideoProcessor getConverter");
                 $this->getConverter()->start($task);
                 $this->handleTaskIfDone($task);
+
             } catch (\Exception $e) {
 
                 // neccesarr<?
@@ -136,27 +138,31 @@ class VideoProcessor implements ProcessorInterface
 
         if ($task->getStatus() !== VideoProcessingTask::STATUS_NEW) {
             throw new \RuntimeException("This task is not new.");
+
         }
 
-        // try {
-            print("try");
+        try {
+            print("try Videoprocessor");
             $converter = $this->getConverter();
-
+            print("converter initilized");
             $converter->process($task);
-
+            print("converter process after");
             $this->handleTaskIfDone($task);
-            /*
+
         } catch (\Exception $e) {
             print("catch");
+            $task->setStatus(VideoProcessingTask::STATUS_FAILED);
+
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->critical($e->getMessage());
 
             $task->setExecuted(false);
             // if (!Environment::getContext()->isProduction()) {
-                throw new \RuntimeException('doProcessTask failed', 0, $e); // let them know
+            // set only status no exception for now
+            //    throw new \RuntimeException('doProcessTask failed', 0, $e); // let them know
             // }
         }
-            */
+
 
         GeneralUtility::makeInstance(VideoTaskRepository::class)->store($task);
     }

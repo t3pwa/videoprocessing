@@ -14,6 +14,9 @@ class FormatRepository implements SingletonInterface
     public function findFormatDefinition(array $options): ?array
     {
         $formats = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['videoprocessing']['formats'] ?? [];
+
+
+        // setting defaults
         $format = $options['format'] ?? 'mp4';
 
 
@@ -205,11 +208,17 @@ class FormatRepository implements SingletonInterface
      */
     public static function normalizeOptions(array $options): array
     {
+
+        // defaults
         $result = [
-            'format' => $options['format'] ?? 'mp4',
+            'format' => $options['format'] ?? 'webm',
             // set start default, if not set
-            'start' => $options['start'] ?? 1,
+            'start' => $options['start'] ?? 0.001,
             'priority' => (int)($options['priority'] ?? 0),
+
+//            'video' => array ["quality": "%1.0","0.8","0.6%"],
+//            {"format": "webm", "start": 3, "duration": 18, "video": {"quality": %1.0,0.8,0.6%}, "audio": {"quality": %1.0,0.8,0.6%}}
+
         ];
 
         foreach (['audio', 'video', 'subtitles', 'data'] as $streamType) {
@@ -217,16 +226,6 @@ class FormatRepository implements SingletonInterface
                 $result[$streamType] = $options[$streamType];
             }
         }
-/*
-        if (!empty($options['start'])) {
-            $result['start'] = $options['start'];
-        }
-*/
-        /*
-        else {
-            $result['start'] = 0;
-        }
-        */
 
         if (!empty($options['duration'])) {
             $result['duration'] = $options['duration'];

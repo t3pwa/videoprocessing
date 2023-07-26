@@ -1,6 +1,5 @@
 <?php
 
-// EXT:my_extension/Classes/EventListener/Joh316PasswordInvalidator.php
 declare(strict_types=1);
 
 namespace Faeb\Videoprocessing\EventListener;
@@ -81,42 +80,41 @@ final class FileProcessingEvent
     public function __invoke(BeforeFileProcessingEvent $event): void
 
     {
-        /*
-        if ($event->getRawPassword() === 'joh316') {
-            $event->setAsInvalid('This password is not allowed');
-        }
-        */
-        $event->getProcessedFile();
+
+//        $event->getProcessedFile();
         $processedFile = $event->getProcessedFile();
-        var_dump( $processedFile->usesOriginalFile() ) ;
-        var_dump( $processedFile->isNew() );
+        // var_dump( $processedFile->usesOriginalFile() ) ;
+        // var_dump( $processedFile->isNew() );
         // $event->setProcessedFile();
-        $event->getDriver();
-        $event->getFile();
-        var_dump( $event->getTaskType() );
-        $event->getConfiguration();
+        // $event->getDriver();
+        // $event->getFile();
+        // var_dump( $event->getTaskType() );
+
+
 
         $needsProcessing = $processedFile->isNew()
-            || (!$processedFile->usesOriginalFile() && !$processedFile->exists()) || $processedFile->isOutdated();
+            || (!$processedFile->usesOriginalFile()
+            && !$processedFile->exists()) || $processedFile->isOutdated();
 
         if (!$needsProcessing) {
-            var_dump("no processing needed");
+            // var_dump("no processing needed");
             return;
         } else {
             var_dump("yes daddy, please process");
+
+            $configuration = $event->getConfiguration();
+            var_dump($configuration);
+
+
         }
 
         $task = $processedFile->getTask();
-
         if (!$this->videoProcessor->canProcessTask($task)) {
             var_dump("no cant do processing");
             return;
         } else {
-            var_dump("yes can do processing");
+            var_dump("processTask()");
         }
-
-        // var_dump($task);
-
         $this->videoProcessor->processTask($task);
 
         // TYPO3's file processing isn't really meant to be extended.

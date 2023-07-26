@@ -68,7 +68,7 @@ class Process extends Command
             $output->writeln("after doProcessTask");
 
             $timePassed = time() - $_SERVER['REQUEST_TIME'];
-            $output->writeln("$timePassed", $timePassed);
+            $output->writeln("$timePassed", int($timePassed). "s");
 
             if ($timePassed > $timeout * 3600) {
                 // $this->outputLine("Abort because of the timeout ($timeout minutes).");
@@ -81,10 +81,12 @@ class Process extends Command
             // $this->output->progressAdvance();
             // not working like this
             //$output->progressAdvance();
+
         }
         // $this->output->progressFinish();
         // not working like this
         //$output->progressFinish();
+        $output->writeln("doProcessTask finished");
 
 
         $output->writeln("Video Process Command execute return ");

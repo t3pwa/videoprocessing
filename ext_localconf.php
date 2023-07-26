@@ -40,10 +40,12 @@ call_user_func(function () {
                 'level' => $conf['level'] ?? '3.1',
                 'quality' => $conf['videoQuality'] ?? 0.8,
             ],
+            /*
             Preset\AacPreset::class => [
                 'fdkAvailable' => !empty($conf['fdkAvailable']) || ($conf['converter'] ?? '') === 'CloudConvert',
                 'quality' => $conf['audioQuality'] ?? 0.8,
             ],
+            */
             Preset\OpusPreset::class => [
                 'quality' => $conf['audioQuality'] ?? 0.8,
             ],
@@ -103,8 +105,9 @@ call_user_func(function () {
     }
 
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['videoprocessing']['video_converters'] = [
-        'LocalFFmpeg' => [Converter\LocalFFmpegConverter::class],
-        'CloudConvert' => [Converter\CloudConvertConverter::class, $conf['cloudConvertApiKey'] ?? '']
+        'LocalFFmpeg' => [Converter\LocalFFmpegConverter::class]
+        // [depricated]
+        // 'CloudConvert' => [Converter\CloudConvertConverter::class, $conf['cloudConvertApiKey'] ?? '']
     ];
 
 //    if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['videoprocessing']['video_converter'])) {
@@ -150,6 +153,7 @@ call_user_func(function () {
         \Faeb\Videoprocessing\Slot\MetaDataRepositorySlot::class,
         'recordPostRetrieval'
     );
+    */
 
     \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\Rendering\RendererRegistry::class)
         ->registerRendererClass(\Faeb\Videoprocessing\Rendering\VideoTagRenderer::class);
@@ -157,23 +161,28 @@ call_user_func(function () {
     \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::class)
         ->registerExtractionService(\Faeb\Videoprocessing\VideoMetadataExtractor::class);
 
-    */
 
-    // if (ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isBackend()) {
-    if (TYPO3_MODE === 'BE') {
+    // if (TYPO3_MODE === 'BE') {
+    //if (ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isBackend()) {
+        /*
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] =
             \Faeb\Videoprocessing\Command\VideoCommandController::class;
-    }
+        */
+    //}
 
 
     if (empty($GLOBALS['TYPO3_CONF_VARS']['LOG']['Faeb']['Videoprocessing'])) {
         $isDev = \TYPO3\CMS\Core\Core\Environment::getContext()->isDevelopment();
         $GLOBALS['TYPO3_CONF_VARS']['LOG']['Faeb']['Videoprocessing']['writerConfiguration'] = [
-            // $isDev ? \TYPO3\CMS\Core\Log\LogLevel::DEBUG : \TYPO3\CMS\Core\Log\LogLevel::INFO => [
+            $isDev ? \TYPO3\CMS\Core\Log\LogLevel::DEBUG : \TYPO3\CMS\Core\Log\LogLevel::INFO => [
+                /*
                 \TYPO3\CMS\Core\Log\Writer\FileWriter::class => [
                     'logFile' => 'typo3temp/logs/video.log',
                 ],
-            // ],
+                */
+
+
+            ],
         ];
     }
 

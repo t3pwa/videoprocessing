@@ -43,12 +43,13 @@ class TestContentElement
         $fileCollector = GeneralUtility::makeInstance(FileCollector::class);
         $fileCollector->addFilesFromRelation($this->cObj->getCurrentTable(), $config['field'] ?? 'media', $this->cObj->data);
 
+        // TODO replace id with content element type + id
         $content .= '<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">';
 
+        $content .= count($configurations). ' - ';
+        $content .=  count ( $fileCollector->getFiles() );
 
-        // $content .= count($configurations);
-
-        if (count($configurations) > 1) {
+        if (count ( $fileCollector->getFiles() ) > 1) {
             $content .= '<div 
                 class="carousel-indicators"
                 style="
@@ -62,7 +63,7 @@ class TestContentElement
                     
                 "
             >';
-            for ($x = 0; $x < count($configurations); $x++) {
+            for ($x = 0; $x < count ( $fileCollector->getFiles() ); $x++) {
                 $content .= '<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="'.$x.'"';
                 if ($x == 0) {
                     $content .= ' class="active" ';
@@ -73,11 +74,7 @@ class TestContentElement
         }
 
 
-
-
-
-    $content .= "<div class='carousel-inner' xmlns='http://www.w3.org/1999/html'>";
-
+        $content .= "<div class='carousel-inner' xmlns='http://www.w3.org/1999/html'>";
         $iterator = 0;
 
         /** @var FileInterface $file */
@@ -94,6 +91,13 @@ class TestContentElement
                 $task = GeneralUtility::makeInstance(VideoTaskRepository::class)->findByFile($file->getUid(), $configuration);
                 $json = json_encode($configuration, JSON_UNESCAPED_SLASHES);
 
+                $content .= '<div class="carousel-item';
+                if ($iterator == 0) {
+                    $content .= ' active';
+                }
+                $content .= '">';
+                //$content .= "<figure>";
+
                 if ($processedFile->exists()) {
 
                     if ($processedFile->hasProperty('ffmpeg')) {
@@ -105,7 +109,7 @@ class TestContentElement
                             ";
                         */
                     } else {
-                        // $content .= "<h3>no ffmpg property?</h3>";
+                        $content .= "<h3>no ffmpg property?</h3>";
                     }
 
                     $size = GeneralUtility::formatSize($processedFile->getSize());
@@ -116,24 +120,14 @@ class TestContentElement
                     // https://mdbootstrap.com/docs/standard/extended/video/
 
                     // $content .= '<div class="carousel-content">';
-                    $content .= '<div class="carousel-item';
-                    if ($iterator == 0) {
-                        $content .= ' active';
-                    }
-                    $content .= '">';
-                    //$content .= "<figure>";
+
 
                     $content .= $renderer->render($processedFile, 0, 0, $configuration);
                     // $content .= "</figure>\n";
 
                     $content .= '
-                    <div class="carousel-caption d-none d-md-block w-100"
+                    <div class="carousel-caption d-none d-md-block w-90"
                         style="
-                        //border: 1px solid red;
-                        // padding-bottom: 0.5em; 
-                        padding: 0.5em 1em ;
-                        margin-bottom: 2em; 
-                        margin-left: -5.5em; 
                         background: -webkit-gradient(linear, left top, left bottom, color-stop(15%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1)));"
                     >';
 
@@ -150,58 +144,49 @@ class TestContentElement
                             "
                         >
                         <i class="fa-ice-cream"></i> 
-                       '. $iterator .' Forrest <small>(' . $size . ')</small>
+                       '. $iterator .' [...] <small>(' . $size . ')</small>
                        </h2>
                        ';
-
-
                     $content .= '
                     <hr />
                     ';
-
-
                     $content .= '<code>' . htmlspecialchars($json) . '</code>';
-
-
                     $content .= '
                         <span>
                         <strong>ext:</strong>' . $task->getTargetFileExtension() . '
                         <strong>status:</strong>' . $task->getStatus() . '
-                        
+                        <strong>exct:</strong>'. $task->getTargetFileExtension() .'
                         </span>
-                        
-                        '. $task->getTargetFileExtension() .'
                         ';
-
 
                     if ($task instanceof VideoProcessingTask) {
                         $duration = intval($task->getProcessingDuration()) . ' s';
                         $content .= "
                             <span class='alert-info'>processing duration: $duration</span>
                         ";
-
                     }
 
-
-                    $content .= '
-                    </div> <!-- caption end -->
-                    </div> <!-- carousle item en -->
-                    <!-- *********************** -->';
-
                 } else {
+                    $content .= '
+                    <div class="carousel-caption d-none d-md-block w-100">';
                     $content .= '<span>file is still processing</span>';
                     // $content .= ProgressViewHelper::renderHtml($processedFile);
                     // $content .= "</figure> <!-- figure end -->
-
                     $content .= '</div>';
                 };
+
+                $content .= '
+                </div> <!-- caption /end -->
+                </div> <!-- carousel item /end -->';
+
 
                 $iterator = $iterator + 1;
 
             }
         }
         $content .= '</div> <!-- carousel inner end -->';
-        if (count($configurations) > 1) {
+
+        if (count ( $fileCollector->getFiles() ) > 1) {
             $content .= '
             <!-- Controls -->
             <div style="padding-top: 0em;">

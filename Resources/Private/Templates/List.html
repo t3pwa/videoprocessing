@@ -13,9 +13,12 @@
         The local ffmpeg implementation will never state that there is an error,
         it'll just retry forever and get stuck, you'll need to remove the task if it never starts.
         <br>
+
+        [depricated]
+        <!--
         On the other hand, the CloudConvert implementation <em>caches</em> error states so if there is an error
         you may need to truncate <code>tx_video_cloudconvert_process</code> in addition to removing the task to retry.
-        At least it doesn't get stuck on a single failing task…
+        At least it doesn't get stuck on a single failing task… -->
         <br>
         I haven't had time to fix those issues yet.
     </f:be.infobox>
