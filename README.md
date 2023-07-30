@@ -20,23 +20,29 @@ TYPO3 already handles image compression (at least sometimes). So wouldn't it be 
 - **custom dimensions** and cropping for specific use cases like background videos or animated thumbnails 
 - **backend module** with overview over all processed videos
 - live updating **progress information** as a placeholder and in the dashboard until the video is processed
-- **caching aware**: the cache of the page with the video will be cleared as soon as the processing is done
-- the way videos are processed can be swapped. By default between local ffmpeg (and [CloudConvert])
+- **caching aware**: (v11: not working yet) the cache of the page with the video will be cleared as soon as the processing is done
+- (the way videos are processed can be swapped. By default between local ffmpeg (and [CloudConvert]) )
   but you can roll out your own converters that run though ssh or some other service 
 
 ## How does it work
 
 - It starts with a new `FileRenderer` which automatically kicks in if you use the `<f:media>` view helper.
 - This renderer will go through the normal TYPO3 file processing pipeline using a new `Video.CropScale` task.
-- Videos are then processed either by the `ffmpeg` command ([depricated] or by [CloudConvert]. ) 
+- Videos are then processed either by the `ffmpeg` command ([depricated in v11 or by [CloudConvert]. ) 
 - During processing, the `FileRenderer` will render a simple progress percentage.
 - After processing is done the video will be rendered similar to the normal html5 video renderer.
 
 ## How to install
 
-- Install the extension using `composer require hn/video`.
+- Install the extension using `composer require (hn/video) `.
+  
 - Either make sure that ffmpeg is available
-  or configure a [CloudConvert] api key in the extension settings.
+  (or configure a [CloudConvert] api key in the extension settings.)
+
+  (php-ffmpeg may be used for poster image generation)
+
+
+  
 - Make sure that the `video:process` command is run regularly.
   This command will run the conversion if you use local `ffmpeg`.
   If you use CloudConvert, this command is technically not required since everything can be handled though callbacks
