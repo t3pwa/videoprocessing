@@ -130,14 +130,22 @@ call_user_func(function () {
 
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['processingTaskTypes']['Video.CropScale'] = VideoProcessingTask::class;
 
-    $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include'][VideoProcessingEid::EID]
-        = VideoProcessingEid::class . '::process';
 
-    $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include'][\Faeb\Videoprocessing\ViewHelpers\ProgressEid::EID]
-        = \Faeb\Videoprocessing\ViewHelpers\ProgressEid::class . '::render';
+
+    $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include'][VideoProcessingEid::EID]
+        = VideoProcessingEid::class ;
+    // . '::process';
+
+    // $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include'][\Faeb\Videoprocessing\ViewHelpers\ProgressEid::EID]
+    $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_video_progress']
+        // = \Faeb\Videoprocessing\ViewHelpers\ProgressEid::class . '::render';
+        = \Faeb\Videoprocessing\ViewHelpers\ProgressEid::class;
+    // . '::process';
+
 
     // TODO replace with service event listener, moved to EventListener Class
-    $dispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+
+    // $dispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
     /*
     $dispatcher->connect(
         \TYPO3\CMS\Core\Resource\ResourceStorage::class,
