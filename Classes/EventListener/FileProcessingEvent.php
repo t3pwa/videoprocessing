@@ -61,24 +61,19 @@ SanitizeFileNameEven
 
 
 /**
- * The password 'joh316' was historically used as default password for
- * the TYPO3 install tool.
- * Today this password is an unsecure choice as it is well-known, too short
- * and does not contain capital letters or special characters.
+ * FileProcessingEvent
+ * https://docs.typo3.org/m/typo3/reference-coreapi/11.5/en-us/ApiOverview/Events/Events/Core/Resource/EnrichFileMetaDataEvent.html
+ *
  */
 final class FileProcessingEvent
 {
-
-
-    private VideoProcessor $videoProcessor;
-
-    public function injectVideoProcessor(VideoProcessor $videoProcessor): void
-    {
+    public function __construct(
+        VideoProcessor $videoProcessor
+    ) {
         $this->videoProcessor = $videoProcessor;
     }
 
     public function __invoke(BeforeFileProcessingEvent $event): void
-
     {
 
 //        $event->getProcessedFile();
@@ -90,8 +85,6 @@ final class FileProcessingEvent
         // $event->getFile();
         // var_dump( $event->getTaskType() );
 
-
-
         $needsProcessing = $processedFile->isNew()
             || (!$processedFile->usesOriginalFile()
             && !$processedFile->exists()) || $processedFile->isOutdated();
@@ -100,20 +93,17 @@ final class FileProcessingEvent
             // var_dump("no processing needed");
             return;
         } else {
-            var_dump("yes daddy, please process");
-
+            // var_dump("yes daddy, please process");
             $configuration = $event->getConfiguration();
-            var_dump($configuration);
-
-
+//            var_dump($configuration);
         }
 
         $task = $processedFile->getTask();
         if (!$this->videoProcessor->canProcessTask($task)) {
-            var_dump("no cant do processing");
+            // var_dump("no cant do processing");
             return;
         } else {
-            var_dump("processTask()");
+            // var_dump("processTask()");
         }
         $this->videoProcessor->processTask($task);
 
@@ -122,10 +112,8 @@ final class FileProcessingEvent
         // but one of the downsides is that it isn't possible to properly add another processor
         // the workaround is to use this pre processor and mark the file as "processed" even though it isn't
         // that way TYPO3 won't try to use the hardcoded image scaling.
+        var_dump($task->getTargetFile()->setName($task->getTargetFilename()));
         $task->getTargetFile()->setName($task->getTargetFilename());
-
-
-
 
     }
 
