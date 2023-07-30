@@ -68,7 +68,7 @@ class Process extends Command
             $output->writeln("after doProcessTask");
 
             $timePassed = time() - $_SERVER['REQUEST_TIME'];
-            $output->writeln("$timePassed", int($timePassed). "s");
+            // $output->writeln("$timePassed", int($timePassed). "s");
 
             if ($timePassed > $timeout * 3600) {
                 // $this->outputLine("Abort because of the timeout ($timeout minutes).");
