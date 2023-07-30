@@ -5,11 +5,15 @@
     "authors": [],
     "license": "GPL-2.0-or-later",
     "require": {
-        "php": "^7.4",
+        "php": "^8.2",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.7",
         "james-heinrich/getid3": "^1.9.16",
-        "typo3/cms-core": "^11.5"
+        "typo3/cms-core": "^11.5",
+        "php-ffmpeg/php-ffmpeg": "^1.1"
+    },
+    "suggest": {
+        "hauerheinrich/hh-video-extender": "0.2.1"
     },
     "require-dev": {
         "typo3/testing-framework": "^6.9.0"
