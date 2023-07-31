@@ -4,6 +4,19 @@
     "description": "",
     "authors": [],
     "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Marco Pfeiffer",
+            "email": "marco@hauptsache.net",
+            "homepage": "https://www.marco.zone",
+            "role": "Developer"
+        },
+        {
+            "name": "Alexander Reinhard",
+            "email": "alex@fabbing.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "ext-json": "*",
@@ -32,6 +45,7 @@
         "typo3-ter/videoprocessing": "self.version"
     },
     "config": {
+        "sort-packages": true,
         "vendor-dir": ".Build/vendor",
         "bin-dir": ".Build/bin",
         "allow-plugins": {
