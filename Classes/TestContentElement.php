@@ -43,13 +43,17 @@ class TestContentElement
         $fileCollector = GeneralUtility::makeInstance(FileCollector::class);
         $fileCollector->addFilesFromRelation($this->cObj->getCurrentTable(), $config['field'] ?? 'media', $this->cObj->data);
 
+        // TDOO add javascript for video gallery with videos
+        // https://stackoverflow.com/questions/74313471/bootstrap-carousel-autoplay-video-on-active-slide-but-pause-video-when-in-acti
+
         // TODO replace id with content element type + id
         $content .= '<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">';
 
         $content .= count($configurations). ' - ';
         $content .=  count ( $fileCollector->getFiles() );
 
-        if (count ( $fileCollector->getFiles() ) > 1) {
+        // if (count ( $fileCollector->getFiles() ) > 1) {
+        if (count ( $configurations ) > 1) {
             $content .= '<div 
                 class="carousel-indicators"
                 style="
@@ -63,7 +67,8 @@ class TestContentElement
                     
                 "
             >';
-            for ($x = 0; $x < count ( $fileCollector->getFiles() ); $x++) {
+            //for ($x = 0; $x < count ( $fileCollector->getFiles() ); $x++) {
+            for ($x = 0; $x < count (   $configurations ); $x++) {
                 $content .= '<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="'.$x.'"';
                 if ($x == 0) {
                     $content .= ' class="active" ';
@@ -109,7 +114,7 @@ class TestContentElement
                             ";
                         */
                     } else {
-                        $content .= "<h3>no ffmpg property?</h3>";
+                        // $content .= "<h3>no ffmpg property?</h3>";
                     }
 
                     $size = GeneralUtility::formatSize($processedFile->getSize());
@@ -151,24 +156,33 @@ class TestContentElement
                     <hr />
                     ';
                     $content .= '<code>' . htmlspecialchars($json) . '</code>';
-                    $content .= '
-                        <span>
-                        <strong>ext:</strong>' . $task->getTargetFileExtension() . '
-                        <strong>status:</strong>' . $task->getStatus() . '
-                        <strong>exct:</strong>'. $task->getTargetFileExtension() .'
-                        </span>
-                        ';
+
+
 
                     if ($task instanceof VideoProcessingTask) {
+
+                        // var_dump($processedFile->getSize());
+                        // var_dump($processedFile->getTitle());
+
+
+                        $content .= '
+                        <span>
+                            <strong>status:</strong>' . $task->getStatus() . '
+                            <strong>ext:</strong>'. $task->getTargetFileExtension() .'
+                        </span>
+                        ';
                         $duration = intval($task->getProcessingDuration()) . ' s';
                         $content .= "
-                            <span class='alert-info'>processing duration: $duration</span>
+                            <strong>processing duration:</strong> 
+                            <span class='alert-info'>$duration</span>
                         ";
                     }
 
                 } else {
                     $content .= '
                     <div class="carousel-caption d-none d-md-block w-100">';
+
+
                     $content .= '<span>file is still processing</span>';
                     // $content .= ProgressViewHelper::renderHtml($processedFile);
                     // $content .= "</figure> <!-- figure end -->
@@ -177,7 +191,7 @@ class TestContentElement
 
                 $content .= '
                 </div> <!-- caption /end -->
-                </div> <!-- carousel item /end -->';
+                </div>';
 
 
                 $iterator = $iterator + 1;
@@ -195,7 +209,7 @@ class TestContentElement
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
               </button>
-              <button class="carousel-control-next" type="button" data-mdb-target=""#carouselVideoExample"
+              <button class="carousel-control-next" type="button" data-mdb-target="#carouselVideoExample"
                 data-mdb-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
