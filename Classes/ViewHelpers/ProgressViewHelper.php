@@ -23,12 +23,22 @@ class ProgressViewHelper extends AbstractViewHelper
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerArgument('subject', 'mixed', "one or multiple task id's or proccessed files.", true);
+        $this->registerArgument(
+            'subject',
+            'mixed',
+            "one or multiple task uid's (or proccessed files).", true);
     }
 
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    )
     {
-        return static::renderHtml($arguments['subject']);
+        // var_dump("renderStatic");
+        return static::renderHtml(
+            $arguments['subject']
+        );
     }
 
     /**
@@ -38,6 +48,10 @@ class ProgressViewHelper extends AbstractViewHelper
      */
     public static function renderHtml($argument)
     {
+        // $content = 'ProgressViewhelper::renderHtml()';
+
+        $content = '';
+
         if ($argument instanceof \Iterator) {
             $argument = iterator_to_array($argument);
         }
@@ -46,6 +60,7 @@ class ProgressViewHelper extends AbstractViewHelper
             $argument = $argument !== null ? [$argument] : [];
         }
 
+        // var_dump('argument in render html', $argument);
         if (empty($argument)) {
             return '';
         }
@@ -76,16 +91,63 @@ class ProgressViewHelper extends AbstractViewHelper
             }
 
             $type = is_object($item) ? get_class($item) : gettype($item);
+            // var_dump($type);
+
             throw new \RuntimeException("Got unknown $type as a task identifier.");
         }
 
+        $content .= '<br><span style="min-width: 512px;">$uids:&nbsp;'. implode(', ', $uids) . '</span>';
+
         $id = 'tx_videoprocessing_progress_' . self::$counter++;
+
         $attributes = [
             'id="' . $id . '"',
             'data-update-url="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '"',
         ];
 
-        $content = '<code ' . implode(' ', $attributes) . '></code>';
+        /* not that way, old way works
+        $content .= '
+        {namespace h=Helhum\TyposcriptRendering\ViewHelpers}
+        <script>
+        var getParticipationsUri = \'<h:uri.ajaxAction controller="Participation" action="listByCompetition" arguments="{competition:competition}" />\';
+        </script>
+        ';
+        */
+
+        // $content .= var_dump ( "eID attributes", $attributes);
+        // $content .= implode(' ', $attributes);
+
+        // $item->getSourceFile();
+        // var_dump($item->getSourceFile());
+
+/*
+        $content .= sprintf('<video %s>%s</video>',
+            implode(' ', $attributes),
+            '<source src="'. $item->getSourceFile()->getPublicUrl() . '" />'
+        );
+*/
+        // $content .=  implode(' ', $attributes);
+/*
+        $content .= '
+            <code ' . implode(' ', $attributes) . '></code>
+            <br>
+        ';
+*/
+        $progressHtml = sprintf('
+             <div class="progress">
+                <div %s class="progress-bar" role="progressbar">
+                    %s
+                </div>
+            </div>
+        ',
+        // htmlspecialchars(ProgressEid::getUrl(...$uids)),
+        implode(' ', $attributes),
+        htmlspecialchars(ProgressEid::getUrl(...$uids))
+        );
+
+
+        $content .= $progressHtml;
+
         $content .= '<script>' . self::renderJavaScript($id) . '</script>';
 
         return $content;
@@ -106,6 +168,7 @@ class ProgressViewHelper extends AbstractViewHelper
             latestProgress = Number(o.progress);
             remainingTime = Number(o.remaining) || Infinity;
             lastUpdate = Number(o.lastUpdate);
+            lastStatus = String(o.status);
         },
         lastContent = element.textContent,
         updateTimeout = 0,
@@ -128,9 +191,28 @@ class ProgressViewHelper extends AbstractViewHelper
             }
         
             // calculate the progress until it should be finished
+
+
             var progress = Math.min(1.0, Math.min($maxPredictedProgress, Date.now() - lastUpdate) / remainingTime),
                 newContent = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1) + '%';
+                
+            console.log(lastStatus);
+                            
+                
             if (lastContent !== newContent) {
+                element.style.background = 'blue'
+                element.style.color = 'white'
+                element.style.width = newContent
+                element.style.minwidth = '5%'
+ 
+                element.textContent = newContent;
+                lastContent = newContent;
+            }
+            
+            if (lastStatus == 'failed') {
+                newContent = 'failed';
+                element.style.width = '100%';
+                element.style.background = 'red';
                 element.textContent = newContent;
                 lastContent = newContent;
             }
@@ -156,6 +238,9 @@ class ProgressViewHelper extends AbstractViewHelper
 JavaScript;
 
         // minify a bit
-        return preg_replace('#\s*\n\s*|\s*//[^\n]*\s*|\s*([,;!=()*/\n+-])\s*#', '\\1', $script);
+        // TODO dont minify on development environment for debugging
+        // return preg_replace('#\s*\n\s*|\s*//[^\n]*\s*|\s*([,;!=()*/\n+-])\s*#', '\\1', $script);
+
+        return $script;
     }
 }
