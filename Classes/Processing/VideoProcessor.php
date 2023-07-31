@@ -79,18 +79,13 @@ class VideoProcessor implements ProcessorInterface
         if ($storedTask === null || $storedTask->getStatus() === VideoProcessingTask::STATUS_FINISHED) {
 
             try {
-                //var_dump("try VideoProcessor Task");
                 $task->setStatus(VideoProcessingTask::STATUS_NEW);
-                // $task->setStatus(VideoProcessingTask::STATUS_FAILED);
-                // var_dump("try VideoProcessor getConverter");
                 $this->getConverter()->start($task);
                 $this->handleTaskIfDone($task);
-
             } catch (\Exception $e) {
 
-                // neccesarr<?
+                // necessarry?
                 $task->setStatus(VideoProcessingTask::STATUS_FAILED);
-
 
                 $task->setExecuted(false);
                 $this->getLogger()->error($e->getMessage(), ['exception' => $e]);
@@ -103,6 +98,7 @@ class VideoProcessor implements ProcessorInterface
 
         // the video should never be done processing here ...
 
+        // TODO
         // add a cache tag to the current page that the video can be displayed as soon as it's done
 
         // calling $GLOBALS['TSFE'] is depricated, what check insted? page-id? isloggedin, is live?
