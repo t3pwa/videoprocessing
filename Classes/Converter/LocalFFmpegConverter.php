@@ -34,8 +34,6 @@ class LocalFFmpegConverter extends AbstractVideoConverter
     {
         $localFile = $task->getSourceFile()->getForLocalProcessing(false);
 
-        var_dump(" [process local file] ", $localFile);
-
         $info = $this->ffprobe($localFile);
         $streams = $info['streams'] ?? [];
 
