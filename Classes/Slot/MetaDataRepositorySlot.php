@@ -58,13 +58,10 @@ class MetaDataRepositorySlot implements SingletonInterface
         $extractedMetaData = $videoMetadataExtractor->extractMetaData($file, $data->getArrayCopy());
         GeneralUtility::makeInstance(MetaDataRepository::class)->update($file->getUid(), $extractedMetaData);
 
-        var_dump($extractedMetaData);
+        // var_dump($extractedMetaData);
 
         // add the new metadata to the retrieved infos
         foreach ($extractedMetaData as $key => $value) {
-
-
-
             $data[$key] = $value;
         }
 
