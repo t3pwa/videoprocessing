@@ -41,10 +41,6 @@ class Process extends Command
         /** @var TYPE_NAME $storedTasks */
 
         $storedTasks = $this->VideoTaskRepository->findByStatus(VideoProcessingTask::STATUS_NEW);
-        // var_dump($storedTasks);
-        // var_dump($GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['processingTaskTypes']);
-        // var_dump($GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']);
-
         //$this->output("Search for new tasks... ");
 
         $count = count($storedTasks);
@@ -59,16 +55,13 @@ class Process extends Command
         // $output->writeln("found ... >>>", $count, "<<<");
         $output->writeln($count);
 
-        // $this->output->progressStart($count);
         foreach ($storedTasks as $storedTask) {
 
             $output->writeln("doProcessTask");
-            // $this->videoProcessor->doProcessTask($storedTask);
             $this->videoProcessor->doProcessTask($storedTask);
             $output->writeln("after doProcessTask");
 
             $timePassed = time() - $_SERVER['REQUEST_TIME'];
-            // $output->writeln("$timePassed", int($timePassed). "s");
 
             if ($timePassed > $timeout * 3600) {
                 // $this->outputLine("Abort because of the timeout ($timeout minutes).");
@@ -87,8 +80,6 @@ class Process extends Command
         // not working like this
         //$output->progressFinish();
         $output->writeln("doProcessTask finished");
-
-
         $output->writeln("Video Process Command execute return ");
         return Command::SUCCESS;
     }
