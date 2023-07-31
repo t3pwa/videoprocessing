@@ -17,7 +17,7 @@ if (TYPO3_MODE === 'BE') {
         'Videoprocessing',
         'system',       // Main area
         'mod1',         // Name of the module
-        '',             // Position of the module
+        'top',             // Position of the module
         [          // Allowed controller action combinations
             \Faeb\Videoprocessing\Controller\TaskController::class => 'list, delete',
         ],
