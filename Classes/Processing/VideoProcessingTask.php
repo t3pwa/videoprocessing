@@ -73,11 +73,6 @@ class VideoProcessingTask extends AbstractTask
         $this->targetFile = $targetFile;
         $this->sourceFile = $targetFile->getOriginalFile();
         $this->configuration = $configuration;
-
-        // print ("dump configuration");
-        // var_dump ($this->configuration);
-
-
     }
 
 
