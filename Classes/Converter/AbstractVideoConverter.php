@@ -11,7 +11,7 @@ abstract class AbstractVideoConverter implements VideoConverterInterface
 {
     public function start(VideoProcessingTask $task): void
     {
-        print ("VideoProcessingTask start");
+        print ("[VideoProcessingTask start] ");
     }
 
     protected function finishTask(VideoProcessingTask $task, string $tempFilename, array $streams)
@@ -28,6 +28,8 @@ abstract class AbstractVideoConverter implements VideoConverterInterface
         // now actually update the file
         $processedFile->updateWithLocalFile($tempFilename);
         $task->setExecuted(true);
+
+        // return $processedFile;
     }
 
     public function update(VideoProcessingTask $task): void
