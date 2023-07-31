@@ -35,7 +35,6 @@ class ProgressViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext
     )
     {
-        // var_dump("renderStatic");
         return static::renderHtml(
             $arguments['subject']
         );
@@ -60,7 +59,6 @@ class ProgressViewHelper extends AbstractViewHelper
             $argument = $argument !== null ? [$argument] : [];
         }
 
-        // var_dump('argument in render html', $argument);
         if (empty($argument)) {
             return '';
         }
@@ -91,7 +89,6 @@ class ProgressViewHelper extends AbstractViewHelper
             }
 
             $type = is_object($item) ? get_class($item) : gettype($item);
-            // var_dump($type);
 
             throw new \RuntimeException("Got unknown $type as a task identifier.");
         }
