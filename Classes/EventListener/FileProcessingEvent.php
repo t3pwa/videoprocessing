@@ -76,34 +76,21 @@ final class FileProcessingEvent
     public function __invoke(BeforeFileProcessingEvent $event): void
     {
 
-//        $event->getProcessedFile();
         $processedFile = $event->getProcessedFile();
-        // var_dump( $processedFile->usesOriginalFile() ) ;
-        // var_dump( $processedFile->isNew() );
-        // $event->setProcessedFile();
-        // $event->getDriver();
-        // $event->getFile();
-        // var_dump( $event->getTaskType() );
 
         $needsProcessing = $processedFile->isNew()
             || (!$processedFile->usesOriginalFile()
             && !$processedFile->exists()) || $processedFile->isOutdated();
 
         if (!$needsProcessing) {
-            // var_dump("no processing needed");
             return;
         } else {
-            // var_dump("yes daddy, please process");
             $configuration = $event->getConfiguration();
-//            var_dump($configuration);
         }
 
         $task = $processedFile->getTask();
         if (!$this->videoProcessor->canProcessTask($task)) {
-            // var_dump("no cant do processing");
             return;
-        } else {
-            // var_dump("processTask()");
         }
         $this->videoProcessor->processTask($task);
 
@@ -112,7 +99,6 @@ final class FileProcessingEvent
         // but one of the downsides is that it isn't possible to properly add another processor
         // the workaround is to use this pre processor and mark the file as "processed" even though it isn't
         // that way TYPO3 won't try to use the hardcoded image scaling.
-        var_dump($task->getTargetFile()->setName($task->getTargetFilename()));
         $task->getTargetFile()->setName($task->getTargetFilename());
 
     }
