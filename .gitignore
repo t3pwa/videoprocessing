@@ -2,7 +2,8 @@
 .Build
 .Build/*
 /.Build/*
-/composer.lock
+# needed for github security updates
+#/composer.lock
 .idea
 
 Classes/Controller/ProgressController.php
