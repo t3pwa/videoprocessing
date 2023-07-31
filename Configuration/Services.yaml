@@ -7,6 +7,9 @@ services:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
 
+  Faeb\Videoprocessing\ViewHelpers\ProgressEid:
+    public: true
+
   Faeb\Videoprocessing\EventListener\FileProcessingEvent:
     tags:
       - name: event.listener
