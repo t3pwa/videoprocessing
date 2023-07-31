@@ -160,11 +160,6 @@ class TestContentElement
 
 
                     if ($task instanceof VideoProcessingTask) {
-
-                        // var_dump($processedFile->getSize());
-                        // var_dump($processedFile->getTitle());
-
-
                         $content .= '
                         <span>
                             <strong>status:</strong>' . $task->getStatus() . '
@@ -177,12 +172,9 @@ class TestContentElement
                             <span class='alert-info'>$duration</span>
                         ";
                     }
-
                 } else {
                     $content .= '
                     <div class="carousel-caption d-none d-md-block w-100">';
-
-
                     $content .= '<span>file is still processing</span>';
                     // $content .= ProgressViewHelper::renderHtml($processedFile);
                     // $content .= "</figure> <!-- figure end -->
@@ -192,7 +184,6 @@ class TestContentElement
                 $content .= '
                 </div> <!-- caption /end -->
                 </div>';
-
 
                 $iterator = $iterator + 1;
 
