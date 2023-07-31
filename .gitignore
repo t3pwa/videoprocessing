@@ -4,3 +4,6 @@
 /.Build/*
 /composer.lock
 .idea
+
+Classes/Controller/ProgressController.php
+Configuration/RequestMiddlewares.php
