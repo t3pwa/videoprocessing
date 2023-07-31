@@ -71,6 +71,8 @@ class VideoTagRenderer implements FileRendererInterface
         $width = $width ?: $file->getProperty('width');
         $height = $height ?: $file->getProperty('height');
 
+        // $poster = $file->getProperty('poster');
+
         /*
         var_dump ( "file prop autolplay", $file->getProperty('autoplay') );
         var_dump ( "file prop title", $file->getProperty('title') );
@@ -90,17 +92,34 @@ class VideoTagRenderer implements FileRendererInterface
 
         $attributes['width'] = 'width="' . round($width) . '"';
         $attributes['height'] = 'height="' . round($height) . '"';
-        // $attributes['class'] = 'class="img-fluid w-100"';
 
-        // TODO if in ffrontend
-        /*
-        if ( array_key_exists('autoplay', $options) ) {
-            var_dump($options['autoplay']);
-        }
-        */
+        // orginal file doesnt help us here, should be keept hidden?!
+        //var_dump($file->getOriginalFile()->getIdentifier());
+
+        // var_dump($file->getProperty('preview_image'));
+
+        //var_dump($file->getOriginalFile()->getIdentifier());
+        //var_dump($file->getIdentifier());
+
+        $posterImageFilePath = $file->getOriginalFile()->getIdentifier();
+        // var_dump("$posterImageFilePath from Origial", $posterImageFilePath);
+
+//        if ($posterImageFilePath != NULL) {
+//            $posterImageFilePath = preg_replace("mp4", "png", $posterImageFilePath);
+//        }
+
+
+        //$attributes['preview_image'] = 'poster="/fileadmin' . $file->getOriginalFile()->getIdentifier() . '"';
+        $attributes['preview_image'] = 'poster="/fileadmin' . $posterImageFilePath . '"';
+        // var_dump($file->getProperty('preview_image'));
+
+
+        // var_dump($file->getProperty('preview_image')->getIdentifier());
+
+        // $attributes['identifier'] = $file->getIdentifier();
+
+        // TODO only if in ffrontend
         // var_dump ( "file prop autoplay", $file->getProperty('autoplay') );
-
-
 
         $autoplay = intval($options['autoplay'] ?? $file->getProperty('autoplay'));
         // what does this even do?
@@ -109,6 +128,12 @@ class VideoTagRenderer implements FileRendererInterface
 
         // Options only available per default in TCA flexform settings.options in test content element
         // if ($autoplay > 0) {
+/*
+        if ($file->getProperty('preview_image')) {
+            $attributes['poster'] = 'poster';
+        }
+*/
+
         if ($file->getProperty('autoplay') > 0) {
             $attributes['autoplay'] = 'autoplay';
         }
@@ -144,20 +169,40 @@ class VideoTagRenderer implements FileRendererInterface
         [$sources, $videos] = $this->buildSources($file, $options, $usedPathsRelativeToCurrentScript);
         self::dispatch('beforeTag', [&$attributes, &$sources], func_get_args());
 
+
         if (empty($sources) && ($options['progress'] ?? true)) {
+            // TODO Process Render refactoring, still clumsy
+            $sources[] = ProgressViewHelper::renderHtml($videos);
 
-            // TODO Process Render refactoring
-            // $sources[] = ProgressViewHelper::renderHtml($videos);
-
-            $tag = sprintf('is processing');
-            $tag .= sprintf('<div %s>%s</div>', implode(' ', $attributes), implode('', $sources));
+            // $tag = sprintf('is processing');
+            $tag = sprintf('<div %s>%s</div>', implode(' ', $attributes), implode('', $sources));
             self::dispatch('afterProgressTag', [&$tag, $attributes, $sources], func_get_args());
         } else {
-            $tag = sprintf('<span style="font-color: #fff;">finished processing</span>');
+            // $tag = sprintf('<span style="font-color: #fff;">finished processing</span>');
 
             // var_dump("video tag renderer attributes for video tag", $attributes);
 
-            $tag .= sprintf('<video %s>%s</video>',
+            // var_dump( "first source", $sources[0]);
+
+            $str = $sources[0];
+            var_dump("first source string:", $sources[0]);
+            preg_match_all( '/<\s*source[^>]src="(.*?)"\s?(.*?)>/i', $str, $match);
+
+            var_dump( "match:", $match[1][0] );
+
+            // orginial file, not processed
+            //var_dump( "first source B", $file->getPublicUrl($usedPathsRelativeToCurrentScript) ) ;
+
+            // $poster = $file->getPublicUrl($usedPathsRelativeToCurrentScript);
+            $poster = $match[1][0];
+
+            $thumbnail_png = substr_replace($poster , 'png', strrpos($poster , '.') +1);
+            $posterImageFilePath = $thumbnail_png;
+
+            $attributes['preview_image'] = 'poster="' . $posterImageFilePath . '"';
+
+
+            $tag = sprintf('<video %s>%s</video>',
                 implode(' ', $attributes),
                 implode('', $sources)
             );
@@ -199,7 +244,10 @@ class VideoTagRenderer implements FileRendererInterface
         $configurations = $this->getConfigurations($options);
         foreach ($configurations as $configuration) {
             // $videos[] = $video = $file->process('Video.CropScale', $configuration);
+
             $videos[] = $video = $file->process('Video.CropScale', $configuration);
+
+
             if (!$video->exists()) {
                 continue;
             }
@@ -212,6 +260,8 @@ class VideoTagRenderer implements FileRendererInterface
             */
 
             $sources[] = sprintf(
+                // simple poster image video test, acctually it's the video starttime
+                // '<source src="%s#t=5" type="%s" />',
                 '<source src="%s" type="%s" />',
                 htmlspecialchars($video->getPublicUrl($usedPathsRelativeToCurrentScript)),
                 htmlspecialchars($video->getMimeType())
