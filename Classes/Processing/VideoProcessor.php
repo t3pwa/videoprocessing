@@ -79,10 +79,10 @@ class VideoProcessor implements ProcessorInterface
         if ($storedTask === null || $storedTask->getStatus() === VideoProcessingTask::STATUS_FINISHED) {
 
             try {
-                var_dump("try VideoProcessor Task");
+                //var_dump("try VideoProcessor Task");
                 $task->setStatus(VideoProcessingTask::STATUS_NEW);
                 // $task->setStatus(VideoProcessingTask::STATUS_FAILED);
-                var_dump("try VideoProcessor getConverter");
+                // var_dump("try VideoProcessor getConverter");
                 $this->getConverter()->start($task);
                 $this->handleTaskIfDone($task);
 
@@ -142,15 +142,15 @@ class VideoProcessor implements ProcessorInterface
         }
 
         try {
-            print("try Videoprocessor");
+            // print(" [try Videoprocessor] ");
             $converter = $this->getConverter();
-            print("converter initilized");
+            // print(" [converter initilized] ");
             $converter->process($task);
-            print("converter process after");
+            print(" [converter process after] handle Task if Done");
             $this->handleTaskIfDone($task);
 
         } catch (\Exception $e) {
-            print("catch");
+            print(" [catch try videoprocessor] status failed ");
             $task->setStatus(VideoProcessingTask::STATUS_FAILED);
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
