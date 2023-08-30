@@ -2,33 +2,18 @@
 
 namespace Faeb\Videoprocessing\Controller;
 
-
 use Psr\Http\Message\ResponseInterface;
-
 use Faeb\Videoprocessing\Processing\VideoTaskRepository;
-
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
-
 class TaskController extends ActionController
 {
 
     private VideoTaskRepository $videoTaskRepository;
-
-    // private array $configuration = [];
-
-    /*
-    public function __construct(
-        VideoTaskRepository $videoTaskRepository,
-        array $configuration
-    ) {
-        $this->videoTaskRepository = $videoTaskRepository;
-    }
-    */
 
     public function listAction(): ResponseInterface
     {
@@ -71,7 +56,15 @@ class TaskController extends ActionController
     public function deleteAction(int $task)
     {
         $videoTaskRepository = GeneralUtility::makeInstance(VideoTaskRepository::class);
-        $task = $videoTaskRepository->findByUid($task);
+
+        try {
+            if ($videoTaskRepository->findByUid($task)) {
+                $task = $videoTaskRepository->findByUid($task);
+            }
+        } finally {
+
+        }
+
         if (!$task) {
             $this->addFlashMessage("Task wasn't found", AbstractMessage::ERROR);
             $this->redirect('list');
