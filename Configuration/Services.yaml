@@ -10,20 +10,40 @@ services:
   Faeb\Videoprocessing\ViewHelpers\ProgressEid:
     public: true
 
-  Faeb\Videoprocessing\EventListener\FileProcessingEvent:
+
+  # Image File (for Videos)
+  Faeb\Videoprocessing\EventListener\ImageFileProcessingEvent:
     tags:
       - name: event.listener
-        identifier: 'FileProcessingEvent'
+        # identifier: 'BeforeFileProcessingEvent'
+        identifier: 'AfterFileProcessingEvent'
+
+  # Video File, two separate Event Listeners?
+  Faeb\Videoprocessing\EventListener\VideoFileProcessingEvent:
+    tags:
+      - name: event.listener
+        identifier: 'AfterFileAddedToIndexEvent'
+
 
   Faeb\Videoprocessing\EventListener\EnrichFileMetaDataEvent:
     tags:
       - name: event.listener
         identifier: 'EnrichFileMetaDataEvent'
 
+  Faeb\Videoprocessing\EventListener\AfterFileMetaDataUpdatedEvent:
+    tags:
+      - name: event.listener
+        identifier: 'AfterFileMetaDataUpdatedEvent'
+
+  Faeb\Videoprocessing\EventListener\AfterFileMetaDataCreatedEvent:
+    tags:
+      - name: event.listener
+        identifier: 'AfterFileMetaDataCreatedEvent'
+
   Faeb\Videoprocessing\Command\Process:
     tags:
       -
         name: console.command
         command: 'video:process'
-        description: '[Fäb] process all open video processing tasks'
+        description: 'process all open video processing tasks'
         schedulable: true
