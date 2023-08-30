@@ -50,6 +50,17 @@
                                             <numIndex index="0">bilinear vs bicublin vs bicubic vs lanczos vs area</numIndex>
                                             <numIndex index="1">{"start": 3, "duration": 10, "video": {"scalingAlgorithm": "%bilinear,bicublin,bicubic,lanczos,area%"}}</numIndex>
                                         </numIndex>
+
+                                        <numIndex index="40" type="array">
+                                            <numIndex index="0">frame jpg 1</numIndex>
+                                            <numIndex index="1">{"format": "jpg", "start": 3, "duration": 1 }</numIndex>
+                                        </numIndex>
+
+                                        <numIndex index="41" type="array">
+                                            <numIndex index="0">frame png 1</numIndex>
+                                            <numIndex index="1">{"format": "png", "start": 3, "duration": 1 }</numIndex>
+                                        </numIndex>
+
                                     </items>
                                 </valuePicker>
                             </config>
