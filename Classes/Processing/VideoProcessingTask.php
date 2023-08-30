@@ -4,6 +4,7 @@ namespace Faeb\Videoprocessing\Processing;
 
 
 use Faeb\Videoprocessing\FormatRepository;
+use Faeb\Videoprocessing\Preset\PresetInterface;
 use TYPO3\CMS\Core\Resource\Processing\AbstractTask;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -209,13 +210,30 @@ class VideoProcessingTask extends AbstractTask
         $timespan = $steps[1]['timestamp'] - $steps[0]['timestamp'];
         $progressSpan = $steps[1]['progress'] - $steps[0]['progress'];
         $remainingProgress = 1 - $steps[1]['progress'];
+
         if ($remainingProgress <= 0.0) {
             return 0.0;
         }
 
-        $remainingTime = $timespan / ($progressSpan / $remainingProgress);
-        // secretly add a bit so that the estimate is actually too high ~ better correct down than up
-        return $remainingTime * 1.05;
+        if (!$timespan != 0 && $progressSpan != 0 && $remainingProgress != 0 ) {
+            $remainingTime = $timespan / ($progressSpan / $remainingProgress);
+            // secretly add a bit so that the estimate is actually too high ~ better correct down than up
+            return $remainingTime * 1.05;
+        } else {
+            // var_dump ("$timespan", $timespan);
+            // var_dump ("$progressSpan", $progressSpan);
+            // var_dump ("$remainingProgress", $remainingProgress);
+
+            if ($timespan < 1) {
+                return 0;
+            } else {
+                // Somthing went wrong?!
+                throw new \RuntimeException("Expection Division by Null" );
+            }
+
+        }
+
+
     }
 
     public function getLastUpdate(): int
