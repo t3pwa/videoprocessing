@@ -45,7 +45,13 @@ class LocalFFmpegConverter extends AbstractVideoConverter
         try {
             $videoTaskRepository = GeneralUtility::makeInstance(VideoTaskRepository::class);
             $formatRepository = GeneralUtility::makeInstance(FormatRepository::class);
-            $ffmpegCommand = $formatRepository->buildParameterString($localFile, $tempFilename, $task->getConfiguration(), $streams);
+            $ffmpegCommand = $formatRepository->buildParameterString(
+                $localFile,
+                $tempFilename,
+                $task->getConfiguration(),
+                $streams
+            );
+
             $progress = $this->ffmpeg($ffmpegCommand);
 
             foreach ($progress as $time) {
@@ -61,11 +67,9 @@ class LocalFFmpegConverter extends AbstractVideoConverter
             $task->addProgressStep(1.0);
             $videoTaskRepository->store($task);
             $this->finishTask($task, $tempFilename, $streams);
-            /* **************************************** */
 
+            /* poster test **************************************** */
 /*
-
-
             $processedFile = $task->getTargetFile();
             var_dump($processedFile->getIdentifier());
             // ***************************************
@@ -78,11 +82,8 @@ class LocalFFmpegConverter extends AbstractVideoConverter
             // var_dump("try poster, ffmpeg create");
             $ffmpeg =  FFMpeg::create();
             // var_dump("after create, try open");
-
             $video = $ffmpeg->open($localFile);
             var_dump("after open localfile, try frame");
-
-
             $frame = $video->frame(TimeCode::fromSeconds($timeFrame));
             // ->save($extractedImagePath);
 
@@ -106,7 +107,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
             var_dump("thumbnail_png", $thumbnail_jpg);
 
 
-            $frame->save("/var/www/vhosts/kukurtihar.com/t3v11.kukurtihar.com/public/fileadmin" . $thumbnail_png);
+            // ToDo hard codesd base path
             $frame->save("/var/www/vhosts/kukurtihar.com/t3v11.kukurtihar.com/public/fileadmin" . $thumbnail_jpg);
 
             var_dump("poster_jpg", $poster_jpg);
@@ -114,16 +115,13 @@ class LocalFFmpegConverter extends AbstractVideoConverter
 
             var_dump("after save frames");
             // ********************************************
-
 */
-
 
         } catch (Exception $e) {
             var_dump("poster catch");
             // $this->logger->notice('poster generation', ['exception' => $e]);
             throw new \RuntimeException("poster generation not working.");
         } finally {
-            var_dump("finally");
             GeneralUtility::unlink_tempfile($tempFilename);
         }
 
