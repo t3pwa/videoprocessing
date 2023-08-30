@@ -5,22 +5,25 @@
 
 <f:layout name="Default"/>
 
+{namespace v=FluidTYPO3\Vhs\ViewHelpers}
+
 <f:section name="Main">
 
     <f:be.infobox title="Note on error handling">
-        Error handling is a bit of a mess right now.
+        Error handling needs improvement.
         <br>
-        The local ffmpeg implementation will never state that there is an error,
-        it'll just retry forever and get stuck, you'll need to remove the task if it never starts.
+        <!-- The local ffmpeg implementation will never state that there is an error, -->
+        <!-- ToDo use php-ffmpeg? -->
+        - remove the task, if it doesn't start.
         <br>
-
-        [depricated]
         <!--
+        [depricated]
         On the other hand, the CloudConvert implementation <em>caches</em> error states so if there is an error
         you may need to truncate <code>tx_video_cloudconvert_process</code> in addition to removing the task to retry.
         At least it doesn't get stuck on a single failing task… -->
         <br>
         I haven't had time to fix those issues yet.
+        <a href="https://github.com/t3pwa/videoprocessing/issues">Issues</a>
     </f:be.infobox>
 
     <div class="panel panel-default">
@@ -30,6 +33,7 @@
                     <th style="width: 13em">create date</th>
                     <th style="width: 6em">status</th>
                     <th>file</th>
+                    <!-- <th>poster image</th> -->
                     <th>configuration</th>
                     <th style="width: 10em"></th>
                 </tr>
@@ -41,15 +45,32 @@
                             {task.crdate -> f:format.date(format: 'l d. M Y')}
                             {task.crdate -> f:format.date(format: 'H:i:s')}
                         </td>
+
                         <td style="text-align: right">
                             {task.status}<br />
                             <f:if condition="{task.status} == 'new'">
                                 <video:progress subject="{task.uid}" />
                             </f:if>
                         </td>
+
                         <td>
+                            [{task.uid}]
                             {task.file_identifier}
+
                         </td>
+
+                        <!-- ToDo
+                        <td>
+                            <a
+                                    href="/fileadmin{v:format.replace(content:task.file_identifier, substring: ".mp4", replacement: '.jpg')}"
+                                    target="_new"
+                            >
+                                <img width="64px" src="/fileadmin{v:format.replace(content:task.file_identifier, substring: ".mp4", replacement: '.jpg')}" />
+                                <v:format.replace content="/fileadmin{task.file_identifier}" substring=".mp4" replacement=".jpg" />
+
+                            </a>
+                        </td>
+                        -->
                         <td>
                             <dl class="dl-horizontal" style="margin: 0">
                                 <f:for each="{task.configuration}" as="configuration" key="key">
@@ -57,6 +78,8 @@
                                 </f:for>
                             </dl>
                         </td>
+
+
                         <td>
                             <div class="btn-group">
                                 <a href="#" class="btn btn-default" title="Info"
