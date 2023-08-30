@@ -8,12 +8,26 @@ use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\Service\FileProcessingService;
 
+use Faeb\Videoprocessing\Processing\LocalImageExtendProcessor;
+
+use TYPO3\CMS\Core\Utility\DebugUtility;
+
 class FileProcessingServiceSlot
 {
     /**
      * @var VideoProcessor
      */
     protected $videoProcessor;
+
+    /**
+     * @var LocalImageExtendProcessor
+     */
+    protected $localImageExtendProcessor;
+
+    public function injectVideoProcessor(VideoProcessor $videoProcessor): void
+    {
+        $this->videoProcessor = $videoProcessor;
+    }
 
     /**
      * @param FileProcessingService $fileProcessingService
@@ -46,10 +60,5 @@ class FileProcessingServiceSlot
         // the workaround is to use this pre processor and mark the file as "processed" even though it isn't
         // that way TYPO3 won't try to use the hardcoded image scaling.
         $task->getTargetFile()->setName($task->getTargetFilename());
-    }
-
-    public function injectVideoProcessor(VideoProcessor $videoProcessor): void
-    {
-        $this->videoProcessor = $videoProcessor;
     }
 }
