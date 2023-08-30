@@ -19,9 +19,6 @@ class FormatRepository implements SingletonInterface
         // setting defaults
         $format = $options['format'] ?? 'mp4';
 
-
-
-
         if (isset($formats[$format])) {
             return $formats[$format];
         }
@@ -107,7 +104,6 @@ class FormatRepository implements SingletonInterface
         if ($input !== null) {
 
             // TODO does this set start options if empty?
-
             if (isset($options['start'])) {
                 array_push($parameters, '-ss', $options['start']);
             } else {
@@ -157,6 +153,7 @@ class FormatRepository implements SingletonInterface
 
         $parameters = $this->buildParameters($input, $output, $options, $sourceStreams);
         $parameters = array_map($escapeShellArg, $parameters);
+
         return implode(' ', $parameters);
     }
 
@@ -189,7 +186,9 @@ class FormatRepository implements SingletonInterface
         }
 
         if (!empty($codecs)) {
-            $result[] = 'codecs="' . implode(', ', $codecs) . '"';
+            // no double quotes on codec
+            // $result[] = 'codecs="' . implode(', ', $codecs) . '"';
+            $result[] = 'codecs=' . implode(', ', $codecs) . '';
         }
 
         return implode('; ', $result);
@@ -212,13 +211,12 @@ class FormatRepository implements SingletonInterface
         // defaults
         $result = [
             'format' => $options['format'] ?? 'webm',
-            // set start default, if not set
+            // set start default, if not set, why not zero working?
             'start' => $options['start'] ?? 0.001,
             'priority' => (int)($options['priority'] ?? 0),
-
+// possible default configuration for testing
 //            'video' => array ["quality": "%1.0","0.8","0.6%"],
 //            {"format": "webm", "start": 3, "duration": 18, "video": {"quality": %1.0,0.8,0.6%}, "audio": {"quality": %1.0,0.8,0.6%}}
-
         ];
 
         foreach (['audio', 'video', 'subtitles', 'data'] as $streamType) {
