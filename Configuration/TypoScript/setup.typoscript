@@ -1,0 +1,15 @@
+# Includes Basic Configuration of website
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/Configuration/TypoScript/Configuration" extensions="typoscript">
+
+# Includes EXT:Form Configuration
+#<INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/Configuration/TypoScript/Extensions/Form" extensions="typoscript">
+
+# Includes EXT:Grid Configuration
+#<INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/Configuration/TypoScript/Extensions/GridElements" extensions="typoscript">
+
+# Includes EXT:Fluid Configuration
+#<INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/Configuration/TypoScript/Extensions/Fluid" extensions="typoscript">
+
+# Includes Page Configuration
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/Configuration/TypoScript/Page" extensions="typoscript">
+

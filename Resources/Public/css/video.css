@@ -1,0 +1,117 @@
+/*
+.embed-responsive-16by9 .progress {
+    border: 1px solid palevioletred;
+}
+
+.embed-responsive-16by9:hover .progress {
+    border: 1px solid red;
+}
+
+.embed-responsive-16by9 video {
+    border: 1px solid hotpink;
+}
+
+.embed-responsive-16by9:hover video {
+    border: 1px solid deeppink;
+}
+*/
+
+/*
+.embed-responsive-item {
+    border: 5px solid red !important;
+}
+*/
+/*
+video + .progress {
+    display: none;
+}
+
+video:hover + .progress {
+    display: block;
+    opacity: 1;
+}
+*/
+
+.progress {
+    border: 1px solid rebeccapurple !important;
+    margin: -1.5em 0em -1.5em 4em;
+    text-align: center;
+    color: whitesmoke;
+    position: absolute;
+    width: 70%;
+    opacity: 0.25;
+}
+
+.embed-responsive-16by9:hover .progress {
+    opacity: 0.65;
+}
+
+/*
+.progress-bar::before {
+    // content: '🔗';
+    content: '◿';
+    content: '∿◿';
+    color: white;
+    font-weight: bolder;
+
+    font-size: 1.2em;
+    line-height: 1.3em;
+
+    float: left;
+}
+*/
+.embed-responsive-16by9 .progress-bar {
+    opacity: 0.5;
+    min-width: 12%;
+    height: 0.85em;
+
+    background: rgba(64,64,64,96);
+
+    font-size: 1.3em;
+    // font-weight: bold;
+}
+
+/*
+.textmedia-item.textmedia-text
+ {
+    margin: 1em;
+    margin-top: -45%;
+    // margin-bottom: -45%;
+    position: relative;
+//    border: 0px solid gray;
+    padding: 2.5em;
+
+}
+
+.textmedia-item.textmedia-text h1,
+.textmedia-item.textmedia-text h2,
+.textmedia-item.textmedia-text h3 {
+    padding: 0.3em;
+    background-color: rgba(192,192,192,0.5) !important;
+    width: auto;
+    display: inline-block;
+    float: left;
+    clear: left;
+}
+/*
+.textmedia-item.textmedia-text h2 {
+    font-size: 1.4em;
+}
+
+.textmedia-item.textmedia-text h3 {
+    font-size: 1.1em;
+}
+
+.textmedia-item.textmedia-text p {
+    float: left;
+    clear: left;
+}
+
+.embed-responsive-16by9:hover video::before {
+    position: absolute;
+    display: block;
+    content: "still processing";
+    border: 1px solid red;
+    padding: 0.5em;
+}
+*/

@@ -1,0 +1,11 @@
+page = PAGE
+page {
+    includeCSS {
+        // <!-- Vendor/Plugins CSS -->
+        103410 = EXT:videoprocessing/Resources/Public/css/video.css
+    }
+
+    includeJS {
+#        10 = EXT:ns_theme_t3karma/Resources/Public/vendor/modernizr/modernizr.min.js
+    }
+}
