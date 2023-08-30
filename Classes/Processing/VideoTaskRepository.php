@@ -12,6 +12,8 @@ use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+use TYPO3\CMS\Core\Utility\DebugUtility;
+
 class VideoTaskRepository implements SingletonInterface
 {
     const TABLE_NAME = 'tx_videoprocessing_task';
@@ -63,6 +65,7 @@ class VideoTaskRepository implements SingletonInterface
         $qb->select('task.uid', 'task.file', 'task.configuration', 'task.status', 'task.progress');
         return $qb;
     }
+
 
     /**
      * @param TaskInterface $task
@@ -145,16 +148,38 @@ class VideoTaskRepository implements SingletonInterface
 
     protected function serializeTask(array $row): VideoProcessingTask
     {
+
         if (isset($this->tasks[$row['uid']])) {
             $this->tasks[$row['uid']]->setDatabaseRow($row);
             return $this->tasks[$row['uid']];
         }
+        $uid = $row['uid'];
+
+        try {
+            $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($row['file']);
+        } catch (\Exception $e) {
+            $row['status'] = 'failed';
+
+            // ToDo update to status "file not found" instead of deleting
+            $qb = $this->createQueryBuilder();
+            $qb->delete(self::TABLE_NAME);
+            $qb->where($qb->expr()->eq('uid', $qb->createNamedParameter($uid, Connection::PARAM_INT)));
+
+            $success = $qb->execute() > 0;
+            if ($success) {
+                var_dump("delete sucess");
+                unset($this->tasks[$uid]);
+            } else {
+                var_dump("delete NO sucess");
+            }
+            return False; // should retunr Task, which we do not have here, when file issing
+        }
 
         $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($row['file']);
         $configuration = unserialize($row['configuration']);
-
         $repository = GeneralUtility::makeInstance(ProcessedFileRepository::class);
         $processedFile = $repository->findOneByOriginalFileAndTaskTypeAndConfiguration($file, 'Video.CropScale', $configuration);
+
         $task = $processedFile->getTask();
         if (!$task instanceof VideoProcessingTask) {
             $type = is_object($task) ? get_class($task) : gettype($task);
