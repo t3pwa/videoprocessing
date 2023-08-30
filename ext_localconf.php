@@ -195,10 +195,11 @@ call_user_func(function () {
     }
 
     if (!empty($conf['testElement'])) {
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(<<<PageTSConfig
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+            <<<PageTSConfig
 mod.wizards.newContentElement.wizardItems.special.elements.video {
     iconIdentifier = content-media
-    title = video testing utility
+    title = videoprocessing testing utility
     description = This elements helps you find the right options for video compression.
     tt_content_defValues {
         CType = video
@@ -215,4 +216,16 @@ tt_content.video.configurations.data = flexform:pi_flexform:settings.options
 TypoScript
         );
     };
+
+
+
 });
+
+
+
+
+
+## CSS
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:videoprocessing/Configuration/TypoScript/Page/page.typoscript">');
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:videoprocessing/Configuration/TypoScript/setup.typoscript">');
