@@ -8,6 +8,7 @@ ExtensionManagementUtility::addTcaSelectItem('tt_content', 'CType', [
 
 
 ExtensionManagementUtility::addPiFlexFormValue('', 'FILE:EXT:videoprocessing/Configuration/FlexForm/TestElement.xml', 'textmedia');
+ExtensionManagementUtility::addPiFlexFormValue('', 'FILE:EXT:videoprocessing/Configuration/FlexForm/TestElement.xml', 'video');
 
 $GLOBALS['TCA']['sys_file_reference']['columns']['autoplay']['config'] = [
     'type' => 'select',
@@ -33,5 +34,3 @@ $GLOBALS['TCA']['tt_content']['types']['video'] = [
     ])
 ];
 
-
-ExtensionManagementUtility::addPiFlexFormValue('', 'FILE:EXT:videoprocessing/Configuration/FlexForm/TestElement.xml', 'video');
