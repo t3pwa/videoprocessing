@@ -53,6 +53,7 @@ class TestContentElement
         $content .=  count ( $fileCollector->getFiles() );
 
         // if (count ( $fileCollector->getFiles() ) > 1) {
+        // carousel item for each configuration
         if (count ( $configurations ) > 1) {
             $content .= '<div 
                 class="carousel-indicators"
@@ -78,10 +79,10 @@ class TestContentElement
             $content .= '</div>';
         }
 
+        $content .= "<div class='carousel-inner'  xmlns='http://www.w3.org/1999/html'>";
 
-        $content .= "<div class='carousel-inner' xmlns='http://www.w3.org/1999/html'>";
+        // key, value instead of iterator?
         $iterator = 0;
-
         /** @var FileInterface $file */
         foreach ($fileCollector->getFiles() as $file) {
             foreach ($configurations as $configuration) {
@@ -96,15 +97,18 @@ class TestContentElement
                 $task = GeneralUtility::makeInstance(VideoTaskRepository::class)->findByFile($file->getUid(), $configuration);
                 $json = json_encode($configuration, JSON_UNESCAPED_SLASHES);
 
-                $content .= '<div class="carousel-item';
-                if ($iterator == 0) {
-                    $content .= ' active';
-                }
+                $content .= '<div 
+                
+                    style="max-width: 100%; width: 100%;"
+                    class="w-100 carousel-item'
+                ;
+                    if ($iterator == 0) {
+                        $content .= ' active';
+                    }
                 $content .= '">';
                 //$content .= "<figure>";
 
                 if ($processedFile->exists()) {
-
                     if ($processedFile->hasProperty('ffmpeg')) {
                         $command = $processedFile->getProperty('ffmpeg');
                         /* $content .= "
@@ -157,8 +161,6 @@ class TestContentElement
                     ';
                     $content .= '<code>' . htmlspecialchars($json) . '</code>';
 
-
-
                     if ($task instanceof VideoProcessingTask) {
                         $content .= '
                         <span>
@@ -174,7 +176,10 @@ class TestContentElement
                     }
                 } else {
                     $content .= '
-                    <div class="carousel-caption d-none d-md-block w-100">';
+                    <div 
+                        class="carousel-caption d-none d-md-block w-100"
+                        style="margin-bottom: -2em;"
+                    >';
                     $content .= '<span>file is still processing</span>';
                     // $content .= ProgressViewHelper::renderHtml($processedFile);
                     // $content .= "</figure> <!-- figure end -->
@@ -194,7 +199,7 @@ class TestContentElement
         if (count ( $fileCollector->getFiles() ) > 1) {
             $content .= '
             <!-- Controls -->
-            <div style="padding-top: 0em;">
+            <div style="margin-bottom:0.5em; padding-top: 0em;">
               <button class="carousel-control-prev" type="button" data-mdb-target="#carouselVideoExample"
                 data-mdb-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
