@@ -2,7 +2,6 @@
 
 namespace Faeb\Videoprocessing\ViewHelpers;
 
-
 use Faeb\Videoprocessing\Processing\VideoProcessingTask;
 use Faeb\Videoprocessing\Processing\VideoTaskRepository;
 
@@ -66,6 +65,8 @@ class ProgressViewHelper extends AbstractViewHelper
         $uids = [];
         foreach ($argument as $item) {
 
+            // var_dump($item);
+
             if (is_numeric($item)) {
                 $uids[] = intval($item);
                 continue;
@@ -76,9 +77,32 @@ class ProgressViewHelper extends AbstractViewHelper
             }
 
             if ($item instanceof VideoProcessingTask) {
+
                 if (!$item->getUid()) {
                     $item = GeneralUtility::makeInstance(VideoTaskRepository::class)->findByTask($item);
                 }
+
+
+                // var_dump(gettype($item), $item);
+
+                if (gettype($item) == NULL) {
+                    // var_dump($item->getUid());
+                    throw new \RuntimeException("The given VideoProcessingTask has no item.");
+                }
+
+                if ($item == NULL) {
+                    // var_dump($item->getUid());
+                    throw new \RuntimeException("The given VideoProcessingTask has no item.");
+                }
+                /*
+
+                /*
+                                if (gettype($item) != NULL) {
+                                    // var_dump($item->getUid());
+                                    throw new \RuntimeException("The given VideoProcessingTask has no item.");
+                                }
+                */
+
 
                 if ($item->getUid()) {
                     $uids[] = $item->getUid();
@@ -87,20 +111,15 @@ class ProgressViewHelper extends AbstractViewHelper
                     throw new \RuntimeException("The given VideoProcessingTask has no id. You must start the process first.");
                 }
             }
-
             $type = is_object($item) ? get_class($item) : gettype($item);
-
             throw new \RuntimeException("Got unknown $type as a task identifier.");
         }
 
-        $content .= '<br><span style="min-width: 512px;">$uids:&nbsp;'. implode(', ', $uids) . '</span>';
+        $content .= '<span>
+            $uids:&nbsp;'. implode(', ', $uids)
+            . '</span>';
 
         $id = 'tx_videoprocessing_progress_' . self::$counter++;
-
-        $attributes = [
-            'id="' . $id . '"',
-            'data-update-url="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '"',
-        ];
 
         /* not that way, old way works
         $content .= '
@@ -117,34 +136,46 @@ class ProgressViewHelper extends AbstractViewHelper
         // $item->getSourceFile();
         // var_dump($item->getSourceFile());
 
+
+        $videoAttributes = [
+            'id="' . $id . '"',
+
+            'data-update-url="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '"',
+            'data-uids="' . implode('-', $uids) . '"',
+        ];
 /*
-        $content .= sprintf('<video %s>%s</video>',
-            implode(' ', $attributes),
+ *
+ * only in frontend ?
+ *
+        $videoContent = sprintf(
+            '<video %s>%s</video>',
+            implode(' ', $videoAttributes),
             '<source src="'. $item->getSourceFile()->getPublicUrl() . '" />'
         );
 */
-        // $content .=  implode(' ', $attributes);
-/*
-        $content .= '
-            <code ' . implode(' ', $attributes) . '></code>
-            <br>
-        ';
-*/
+        $progressAttributes = [
+            'id="' . $id . '"',
+            'data-update-url="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '"',
+            'data-progress=""',
+
+        ];
+
+        // Todo move content specific styles to extension frontend css
         $progressHtml = sprintf('
              <div class="progress">
-                <div %s class="progress-bar" role="progressbar">
-                    %s
-                </div>
-            </div>
+                <div %s class="progress-bar" role="progressbar">%s</div>
+             </div>
         ',
         // htmlspecialchars(ProgressEid::getUrl(...$uids)),
-        implode(' ', $attributes),
-        htmlspecialchars(ProgressEid::getUrl(...$uids))
+            implode(
+                ' ',
+                $progressAttributes
+            ),
+            '<a href="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '">...</a>'
         );
 
-
         $content .= $progressHtml;
-
+//        $content .= $videoContent;
         $content .= '<script>' . self::renderJavaScript($id) . '</script>';
 
         return $content;
@@ -177,6 +208,9 @@ class ProgressViewHelper extends AbstractViewHelper
                 updateTimeout = setTimeout(requestProperties, $pollingInterval);
                 callback && callback();
             };
+            
+            console.log(element.dataset.updateUrl);
+            
             xhr.open('GET', element.dataset.updateUrl, true);
             xhr.send();
         },
@@ -188,24 +222,23 @@ class ProgressViewHelper extends AbstractViewHelper
             }
         
             // calculate the progress until it should be finished
-
-
             var progress = Math.min(1.0, Math.min($maxPredictedProgress, Date.now() - lastUpdate) / remainingTime),
-                newContent = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1) + '%';
+            newContent = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1) + '%';
+            console.log(progress);
+            // element.style.background-color: hsl(progress 100% 50%);
+            
+            element.style.width = newContent;
                 
-            console.log(lastStatus);
-                            
-                
-            if (lastContent !== newContent) {
-                element.style.background = 'blue'
-                element.style.color = 'white'
-                element.style.width = newContent
-                element.style.minwidth = '5%'
- 
+            /*
+            if (lastStatus == 'new') {
+                // newContent = 'new in queue';
+                element.style.width = '33%';
+                element.style.background = 'lightgreen';
                 element.textContent = newContent;
                 lastContent = newContent;
             }
-            
+            */
+            /*  
             if (lastStatus == 'failed') {
                 newContent = 'failed';
                 element.style.width = '100%';
@@ -213,13 +246,37 @@ class ProgressViewHelper extends AbstractViewHelper
                 element.textContent = newContent;
                 lastContent = newContent;
             }
+            */
+
+            if (lastContent !== newContent) {
+//                element.style.background = 'blue'
+//                element.style.color = 'white'
+//                element.style.width = newContent
+//                element.style.minwidth = '5%'
+ 
+                element.dataset.progress = newContent;
+                element.textContent = newContent;
+                lastContent = newContent;
+            }
+
+            if (progress < 0.1) {
+                  newContent = 'fresh';
+//                element.style.min-width = '10%';
+//                element.style.background = 'orange';
+
+                element.textContent = ''+newContent;
+                lastContent = newContent;
+            
+            }
+
             
             if (progress < 1.0) {
+
                 var milliseconds = remainingTime / (1.0 - latestProgress) / 1000;
-                setTimeout(render, Math.max(100, Math.min(1000, milliseconds)));
+                setTimeout(render, Math.max(100, Math.min(500, milliseconds)));
             } else {
                 clearTimeout(updateTimeout);
-                if (document.hasFocus() && lastUpdate + 20000 > Date.now()) {
+                if (document.hasFocus() && lastUpdate + 5000 > Date.now()) {
                     setTimeout(function () {
                         if (!window.video_is_reloading) {
                             location.reload();
@@ -228,6 +285,8 @@ class ProgressViewHelper extends AbstractViewHelper
                     }, 5000);
                 }
             }
+            
+            
         }
     ;
     requestProperties(render);
