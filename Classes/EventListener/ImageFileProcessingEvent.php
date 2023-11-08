@@ -14,6 +14,7 @@ use Faeb\Videoprocessing\Processing\LocalImageExtendProcessor;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileProcessingEvent;
 use TYPO3\CMS\Core\Resource\Event\FileProcessingEvent;
 
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -78,10 +79,6 @@ SanitizeFileNameEven
 final class ImageFileProcessingEvent
 {
 
-    /** @var \TYPO3\CMS\Core\Log\Logger */
-    protected $logger;
-
-
     /**
      * @var LocalImageExtendProcessor
      */
@@ -100,11 +97,6 @@ final class ImageFileProcessingEvent
     }
     */
 
-    protected function getLogger(): LoggerInterface
-    {
-        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-    }
-
     protected function getLocalImageExtendProcessor() {
         // return GeneralUtility::makeInstance(LocalImageExtendProcessor::class)->getLocalImageExtendProcessor(__CLASS__);
         return GeneralUtility::makeInstance(LocalImageExtendProcessor::class);
@@ -113,22 +105,34 @@ final class ImageFileProcessingEvent
 
     public function __invoke(BeforeFileProcessingEvent $event): void
     // public function __invoke(AfterFileProcessingEvent $event): void
+    // public function __invoke(AfterFileAddedEvent $event): void
+
     {
 
+        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $logger->info('LocalImageProcessing Event invoke');
         // var_dump("invoke");
 
         $localImageExtendProcessor = $this->getLocalImageExtendProcessor();
+
+
         // \TYPO3\CMS\Core\Utility\DebugUtility::debug($event);
+
+
         $processedFile = $event->getProcessedFile();
         $needsProcessing = $processedFile->isNew()
             || (!$processedFile->usesOriginalFile()
             && !$processedFile->exists()) || $processedFile->isOutdated();
 
         if (!$needsProcessing) {
-            // print ("".$processedFile->getPublicUrl()."<br> exists, but process anyways!");
-//            return;
+//            print ("".$processedFile->getPublicUrl()."<br> exists, but process anyways!");
+            // \TYPO3\CMS\Core\Utility\DebugUtility::debug("[Image] BeforeFileProcessingEvent, does not need processing");
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->info('LocalImageProcessing not needs processing');
+
+            return;
         } else {
-            // \TYPO3\CMS\Core\Utility\DebugUtility::debug("BeforeFileProcessingEvent");
+//            \TYPO3\CMS\Core\Utility\DebugUtility::debug("[Image] BeforeFileProcessingEvent, needs processing");
 /*
             $message = GeneralUtility::makeInstance(FlashMessage::class,
                 'Needs processing',
@@ -141,13 +145,16 @@ final class ImageFileProcessingEvent
             $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
             $messageQueue->addMessage($message);
 */
-            $configuration = $event->getConfiguration();
+//            $configuration = $event->getConfiguration();
+//            \TYPO3\CMS\Core\Utility\DebugUtility::debug($configuration);
 
-//            var_dump("image configuration of event", $configuration );
+            // var_dump("image configuration of event", $configuration );
 
         }
 
         $task = $processedFile->getTask();
+//        \TYPO3\CMS\Core\Utility\DebugUtility::debug($task);
+
 
         /* Video not needed here, just image, right?
         if (!$this->videoProcessor->canProcessTask($task)) {
@@ -160,8 +167,6 @@ final class ImageFileProcessingEvent
         // but one of the downsides is that it isn't possible to properly add another processor
         // the workaround is to use this pre processor and mark the file as "processed" even though it isn't
         // that way TYPO3 won't try to use the hardcoded image scaling.
-
-        // $task->getTargetFile()->setName($task->getTargetFilename());
 
         if ( $localImageExtendProcessor->canProcessTask($task) ) {
             $task->getTargetFile()->setName(

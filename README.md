@@ -34,22 +34,25 @@ TYPO3 already handles image compression (at least sometimes). So wouldn't it be 
 
 ## How to install
 
-- Install the extension using `composer require (hn/video) `.
+- Install the extension using `composer require (hn/video) for TYPO3 <= 9`.
+- Install the extension using `composer require (t3pwa/videoprocessing) for TYPO3 >= 10`.
+- via git repository https://github.com/t3pwa/videoprocessing TYPO3 >= 10
+- 
   
 - Either make sure that ffmpeg is available
-  (or configure a [CloudConvert] api key in the extension settings.)
-
-  (php-ffmpeg may be used for poster image generation)
+  [depricated or configure a [CloudConvert] api key in the extension settings.]
+  (php-ffmpeg may be used for poster image generation, dev)
 
 
   
 - Make sure that the `video:process` command is run regularly.
   This command will run the conversion if you use local `ffmpeg`.
-  If you use CloudConvert, this command is technically not required since everything can be handled though callbacks
+  (If you use CloudConvert, this command is technically not required since everything can be handled though callbacks
   but it will increase the accuracy of the progress information and act as a fallback if the callbacks
-  don't come though for whatever reason.
-- Check that the php configurations `upload_max_filesize` and `post_max_size` are large enough.
-  I would recommend at least 1GB. If you use CloudConvert for free then that is also the max size they allow you.
+  don't come though for whatever reason.)
+- Ensure that the php configurations `upload_max_filesize` and `post_max_size` are set properly.
+  1GB are recommended. 
+- (If you use CloudConvert for free then that is also the max size they allow you.)
   
 ## Simple Configuration
 
@@ -91,6 +94,8 @@ This is an example of an autoplaying video as you might use it in a stage or a c
     audio: {disabled: 1}
 }" />
 ```
+<!-- ToDo: additional Paramters? not valid, additionalAttributes or AdditionalConfig -->
+
 
 ### options
 

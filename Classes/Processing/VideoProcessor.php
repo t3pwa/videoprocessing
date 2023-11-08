@@ -62,8 +62,11 @@ class VideoProcessor implements ProcessorInterface
      */
     public function processTask(TaskInterface $task)
     {
+        $this->getLogger()->notice('processTask');
+
         if (!$task instanceof VideoProcessingTask) {
             $type = is_object($task) ? get_class($task) : gettype($task);
+            $this->getLogger()->error('not a video task', ['type' => $type]);
             throw new \InvalidArgumentException("Expected " . VideoProcessingTask::class . ", got $type");
         }
 
@@ -77,16 +80,12 @@ class VideoProcessor implements ProcessorInterface
         // if there wasn't a task before ~ this is the first time someone wants that video with that configuration
         // or if there was one successfully executed ~ the processed file was deleted and we have to do it again
         if ($storedTask === null || $storedTask->getStatus() === VideoProcessingTask::STATUS_FINISHED) {
-
             try {
                 $task->setStatus(VideoProcessingTask::STATUS_NEW);
                 $this->getConverter()->start($task);
                 $this->handleTaskIfDone($task);
             } catch (\Exception $e) {
-
-                // necessarry?
                 $task->setStatus(VideoProcessingTask::STATUS_FAILED);
-
                 $task->setExecuted(false);
                 $this->getLogger()->error($e->getMessage(), ['exception' => $e]);
                 // if (Environment::getContext()->isDevelopment()) {
@@ -96,24 +95,36 @@ class VideoProcessor implements ProcessorInterface
             $taskRepository->store($task);
         }
 
-        // the video should never be done processing here ...
-
-        // TODO
-        // add a cache tag to the current page that the video can be displayed as soon as it's done
+        // var_dump($task->getConfigurationChecksum());
 
         // calling $GLOBALS['TSFE'] is depricated, what check insted? page-id? isloggedin, is live?
         // https://docs.typo3.org/m/typo3/reference-coreapi/10.4/en-us/ApiOverview/Context/Index.html
         // $userIsLoggedIn = $context->getPropertyFromAspect('frontend.user', 'isLoggedIn');
 
+
+        // depricated
         // if (!$task->isExecuted() && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
-        /*
+
+        // add condition for fe instance
         if (!$task->isExecuted() ) {
 
-            // addCAcheTags depricated?
-            $GLOBALS['TSFE']->addCacheTags([$task->getConfigurationChecksum()]);
-            $GLOBALS['TSFE']->config['config']['sendCacheHeaders'] = false;
+            // addCacheTags depricated?
+//            $GLOBALS['TSFE']->addCacheTags([$task->getConfigurationChecksum()]);
+//            $GLOBALS['TSFE']->config['config']['sendCacheHeaders'] = false;
+
+            // TODO
+            // add a cache tag to the current page that the video can be displayed as soon as it's done
+            $this->cacheManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager');
+            // $this->cacheManager->flushCachesInGroupByTag('pages', 'RecordName_' . $item->getUid());
+
+            // $this->cacheManager->getCache('cache_pages')->flushByTag('RecordName_' . $item->getUid());
+            // $this->cacheManager->getCache('cache_pagesection')->flushByTag('RecordName_' . $item->getUid());
+
+            // $this->cacheManager->flushCachesInGroupByTag('pages', 'RecordName_' . $task->getConfigurationChecksum() );
+            // $this->cacheManager->getCache('cache_pages')->flushByTag('RecordName_' . $task->getConfigurationChecksum() );
+            $this->cacheManager->flushCachesInGroupByTag('pages', $task->getConfigurationChecksum());
         }
-        */
+
     }
 
     /**
@@ -131,10 +142,8 @@ class VideoProcessor implements ProcessorInterface
             throw new \InvalidArgumentException("Expected " . VideoProcessingTask::class . ", got $type");
         }
 
-
         if ($task->getStatus() !== VideoProcessingTask::STATUS_NEW) {
             throw new \RuntimeException("This task is not new.");
-
         }
 
         try {
@@ -142,7 +151,7 @@ class VideoProcessor implements ProcessorInterface
             $converter = $this->getConverter();
             // print(" [converter initilized] ");
             $converter->process($task);
-            print(" [converter process after] handle Task if Done");
+            // print(" [converter process after] handle Task if Done");
             $this->handleTaskIfDone($task);
 
         } catch (\Exception $e) {

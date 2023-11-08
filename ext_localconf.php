@@ -5,10 +5,40 @@ use Faeb\Videoprocessing\Preset;
 use Faeb\Videoprocessing\Processing\VideoProcessingEid;
 use Faeb\Videoprocessing\Processing\VideoProcessingTask;
 use TYPO3\CMS\Core\Http\ApplicationType;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
+
+
+
+
+use TYPO3\CMS\Core\Log\LogLevel;
+use TYPO3\CMS\Core\Log\Writer\DatabaseWriter;
+
 
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
+
+## CSS
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:videoprocessing/Configuration/TypoScript/Page/page.typoscript">');
+
+
+
+#\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:videoprocessing/Configuration/TypoScript/setup.typoscript">');
+
+
+
+
+// Logging
+$GLOBALS['TYPO3_CONF_VARS']['LOG']['Faeb']['Videoprocessing']['writerConfiguration'] = [
+// $GLOBALS['TYPO3_CONF_VARS']['LOG']['faeb']['Videoprocessing']['Controller']['writerConfiguration'] = [
+    LogLevel::DEBUG => [
+        DatabaseWriter::class => [
+            'logTable' => 'tx_videoprocessing_log',
+        ],
+    ],
+];
+
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['processingTaskTypes']['Video.CropScale'] = VideoProcessingTask::class;
 
@@ -179,6 +209,7 @@ call_user_func(function () {
     //}
 
 
+    // ToDo if empty? or if not empty?
     if (empty($GLOBALS['TYPO3_CONF_VARS']['LOG']['Faeb']['Videoprocessing'])) {
         $isDev = \TYPO3\CMS\Core\Core\Environment::getContext()->isDevelopment();
         $GLOBALS['TYPO3_CONF_VARS']['LOG']['Faeb']['Videoprocessing']['writerConfiguration'] = [
@@ -225,7 +256,20 @@ TypoScript
 
 
 
-## CSS
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:videoprocessing/Configuration/TypoScript/Page/page.typoscript">');
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:videoprocessing/Configuration/TypoScript/setup.typoscript">');
+
+### not working because static class
+#use Faeb\Videoprocessing\ViewHelpers\BootstrapPackage\FrameViewhelper as FrameViewhelperXclass;
+#use Faeb\Videoprocessing\ViewHelpers\FrameViewhelper as FrameViewhelper;
+
+#$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][BK2K\BootstrapPackage\ViewHelpers\FrameViewhelper::class] = [
+#    'className' => Faeb\Videoprocessing\ViewHelpers\FrameViewhelper::class
+#];
+
+/*
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+    'videoprocessing',
+    'Configuration/TypoScript',
+    'Videoprocessing'
+);
+*/

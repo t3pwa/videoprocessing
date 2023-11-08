@@ -11,7 +11,6 @@ abstract class AbstractVideoConverter implements VideoConverterInterface
 {
     public function start(VideoProcessingTask $task): void
     {
-        // print ("[VideoProcessingTask start] ");
     }
 
     protected function finishTask(VideoProcessingTask $task, string $tempFilename, array $streams)

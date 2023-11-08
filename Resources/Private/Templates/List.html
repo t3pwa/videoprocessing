@@ -1,12 +1,10 @@
+{namespace v=FluidTYPO3\Vhs\ViewHelpers}
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       xmlns:c="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
       xmlns:video="http://typo3.org/ns/Faeb/Videoprocessing/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
 <f:layout name="Default"/>
-
-{namespace v=FluidTYPO3\Vhs\ViewHelpers}
-
 <f:section name="Main">
 
     <f:be.infobox title="Note on error handling">
@@ -48,14 +46,27 @@
 
                         <td style="text-align: right">
                             {task.status}<br />
+
+
                             <f:if condition="{task.status} == 'new'">
+
                                 <video:progress subject="{task.uid}" />
+
+                            </f:if>
+
+                            <f:if condition="{task.status} == 'failed'">
+                                <span class="t3-icon t3-icon-mimetypes t3-icon-other-other">&nbsp;</span>
                             </f:if>
                         </td>
 
                         <td>
+
+                            <f:comment>
+                            <f:debug>{task}</f:debug>
+                            </f:comment>
+
                             [{task.uid}]
-                            {task.file_identifier}
+                            Ident: {task.file_identifier}
 
                         </td>
 

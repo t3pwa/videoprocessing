@@ -13,3 +13,25 @@
 # Includes Page Configuration
 <INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/Configuration/TypoScript/Page" extensions="typoscript">
 
+
+# <INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/Configuration/TypoScript/" extensions="typoscript">
+# <INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/TypoScript/ContentElement/Helper/ContentElement.typoscript" extensions="typoscript">
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/TypoScript/ContentElement/Helper/" extensions="typoscript">
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:videoprocessing/TypoScript/ContentElement/" extensions="typoscript">
+
+plugin.tx_videoprocessing {
+	view {
+		templateRootPaths {
+			0 = EXT:videoprocessing/Resources/Private/Templates/
+			1 = {$plugin.tx_videoprocessing.view.templateRootPath}
+		}
+		partialRootPaths {
+			0 = EXT:videoprocessing/Resources/Private/Partials/
+			1 = {$plugin.tx_videoprocessing.view.partialRootPath}
+		}
+		layoutRootPaths {
+			0 = EXT:videoprocessing/Resources/Private/Layouts/
+			1 = {$plugin.tx_videoprocessing.view.layoutRootPath}
+		}
+	}
+}

@@ -100,9 +100,14 @@ class VideoTaskRepository implements SingletonInterface
 
         $qb->setMaxResults(1);
         $row = $qb->execute()->fetch();
+
+//        \TYPO3\CMS\Core\Utility\DebugUtility::debug($row);
+
         if (!$row) {
             return null;
         }
+
+
 
         return $this->serializeTask($row);
     }
@@ -119,6 +124,10 @@ class VideoTaskRepository implements SingletonInterface
 
         $qb->setMaxResults(1);
         $row = $qb->execute()->fetch();
+
+//        \TYPO3\CMS\Core\Utility\DebugUtility::debug($row);
+
+
         if (!$row) {
             return null;
         }
@@ -167,10 +176,10 @@ class VideoTaskRepository implements SingletonInterface
 
             $success = $qb->execute() > 0;
             if ($success) {
-                var_dump("delete sucess");
+                // var_dump("delete sucess");
                 unset($this->tasks[$uid]);
             } else {
-                var_dump("delete NO sucess");
+                // var_dump("delete NO sucess");
             }
             return False; // should retunr Task, which we do not have here, when file issing
         }

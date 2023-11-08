@@ -54,6 +54,8 @@ class ProgressEid
     {
         $queryParams = $request->getQueryParams();
 
+        // \TYPO3\CMS\Core\Utility\DebugUtility::debug($queryParams);
+
         if (empty($queryParams)){
             throw new BadRequestException("no query params.");
         } else {
@@ -70,17 +72,29 @@ class ProgressEid
         foreach ((array)$uids as $uid) {
             $task = $videoTaskRepository->findByUid($uid);
             // get the newest information
-            VideoProcessor::getConverter()->update($task);
-            if ($highestTask === null || $highestTask->getLastProgress() < $task->getLastProgress()) {
-                $highestTask = $task;
+
+            if ($task) {
+                VideoProcessor::getConverter()->update($task);
+                if ($highestTask === null || $highestTask->getLastProgress() < $task->getLastProgress()) {
+                    $highestTask = $task;
+                }
             }
+
         }
 
         $response = $this->responseFactory->createResponse()
             ->withHeader('Content-Type', 'application/json; charset=utf-8');
-        $response->getBody()->write(
-            json_encode(self::parameters($highestTask), JSON_UNESCAPED_SLASHES)
-        );
+
+        if ($highestTask) {
+            $response->getBody()->write(
+                json_encode(self::parameters($highestTask), JSON_UNESCAPED_SLASHES)
+            );
+        } else {
+            $response->getBody()->write(
+                "{\"status\": \"missing\"}"
+            );
+        }
+
 
         return $response;
 
@@ -93,7 +107,13 @@ class ProgressEid
             'remaining' => round($task->getEstimatedRemainingTime() * 1000),
             // TODO don't transfer an exact timestamp as the client may have a wrong clock
             'lastUpdate' => $task->getLastUpdate() * 1000,
-            'status' => $task->getStatus()
+            'status' => $task->getStatus(),
+            'uid' => $task->getUid(),
+            'progressSteps' => $task->getProgressSteps(),
+            'processingDuration' => $task->getProcessingDuration()
+
+
+
         ];
     }
 

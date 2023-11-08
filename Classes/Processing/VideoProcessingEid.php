@@ -53,6 +53,8 @@ class VideoProcessingEid
         $timeout = ini_get("max_execution_time") - 10;
 
         $storedTasks = $repository->findByStatus(VideoProcessingTask::STATUS_NEW);
+
+
         foreach ($storedTasks as $index => $storedTask) {
             $videoProcessor->doProcessTask($storedTask);
 

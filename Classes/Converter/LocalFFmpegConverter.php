@@ -68,10 +68,10 @@ class LocalFFmpegConverter extends AbstractVideoConverter
             $videoTaskRepository->store($task);
             $this->finishTask($task, $tempFilename, $streams);
 
-            /* poster test **************************************** */
+            /* poster test in video **************************************** */
 /*
             $processedFile = $task->getTargetFile();
-            var_dump($processedFile->getIdentifier());
+            // var_dump($processedFile->getIdentifier());
             // ***************************************
             // the php-ffmpeg way, works with t3v11, php82, php-ffmpeg:1.1
             // https://stackoverflow.com/questions/2043007/generate-preview-image-from-video-file
@@ -104,10 +104,10 @@ class LocalFFmpegConverter extends AbstractVideoConverter
             $poster_jpg = substr_replace($poster2 , 'jpg', strripos($poster2, '.') +1);
 //            var_dump("pos", strripos( $poster2, '.') );
             var_dump("thumbnail_png", $thumbnail_png);
-            var_dump("thumbnail_png", $thumbnail_jpg);
+            var_dump("thumbnail_jpg", $thumbnail_jpg);
 
 
-            // ToDo hard codesd base path
+            // ToDo hard codeed base path
             $frame->save("/var/www/vhosts/kukurtihar.com/t3v11.kukurtihar.com/public/fileadmin" . $thumbnail_jpg);
 
             var_dump("poster_jpg", $poster_jpg);
@@ -118,8 +118,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
 */
 
         } catch (Exception $e) {
-            var_dump("poster catch");
-            // $this->logger->notice('poster generation', ['exception' => $e]);
+            $this->logger->notice('poster generation', ['exception' => $e]);
             throw new \RuntimeException("poster generation not working.");
         } finally {
             GeneralUtility::unlink_tempfile($tempFilename);
@@ -144,7 +143,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
 
         $parameters = ['-v', 'quiet', '-print_format', 'json', '-show_streams', '-show_format', $file];
         $commandStr = $ffprobe . ' ' . implode(' ', array_map('escapeshellarg', $parameters));
-        $logger->info('run ffprobe command', ['command' => $commandStr]);
+        $logger->debug('run ffprobe command', ['command' => $commandStr]);
 
         $execution = $this->runner->run($commandStr);
         $response = implode('', iterator_to_array($execution));
@@ -192,12 +191,13 @@ class LocalFFmpegConverter extends AbstractVideoConverter
         if (is_string($nice)) {
             $ffmpeg = "$nice $ffmpeg";
         } else {
-            var_dump("no nice found, exception?");
+            // var_dump("no nice found, exception?");
             // throw new \RuntimeException("nice not found.");
         }
 
         $commandStr = "$ffmpeg -loglevel warning -stats $parameters";
-        $logger->notice("run ffmpeg command", ['command' => $commandStr]);
+        // $logger->debug("[LocalFFmpegConverter] run ffmpeg command", ['command' => $commandStr] );
+        $logger->debug(sprintf('[LocalFFmpegConverter] run ffmpeg command %s', $commandStr ) );
         $process = $this->runner->run($commandStr);
         $output = '';
         foreach ($process as $line) {
@@ -212,6 +212,10 @@ class LocalFFmpegConverter extends AbstractVideoConverter
         $returnValue = $process->getReturn();
         if ($returnValue !== 0) {
             throw new ConversionException("Bad return value ($returnValue): $commandStr\n$output");
+
+            // ToDo add reason to task, when failed.
+            // $task->set $output
+
         }
     }
 }

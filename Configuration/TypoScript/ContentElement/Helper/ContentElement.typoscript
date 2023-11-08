@@ -1,0 +1,736 @@
+# CONFIG FOR IMAGE RENDERING
+# Shared settings for BackendLayout configs
+shared.responsiveimages.footer.column {
+    multiplier {
+        default = 0.3333
+        xlarge = 0.3333
+        large = 0.3333
+        medium = 0.3333
+    }
+    gutters {
+        default = 80
+        xlarge = 80
+        large = 80
+        medium = 80
+    }
+}
+
+# CONTENT ELEMENT SETTINGS
+# Shared settings for TYPO3 content elements
+lib.contentElement = FLUIDTEMPLATE
+lib.contentElement {
+    templateName = Default
+    templateRootPaths {
+        0 = EXT:bootstrap_package/Resources/Private/Templates/ContentElements/
+        10 = {$plugin.bootstrap_package_contentelements.view.templateRootPath}
+        20 = EXT:videoprocessing/Resources/Private/Templates/ContentElements/
+
+    }
+    partialRootPaths {
+        0 = EXT:bootstrap_package/Resources/Private/Partials/ContentElements/
+        10 = {$plugin.bootstrap_package_contentelements.view.partialRootPath}
+        20 = EXT:videoprocessing/Resources/Private/Partials/ContentElements/
+    }
+    layoutRootPaths {
+        0 = EXT:bootstrap_package/Resources/Private/Layouts/ContentElements/
+        10 = {$plugin.bootstrap_package_contentelements.view.layoutRootPath}
+        20 = EXT:videoprocessing/Resources/Private/Layouts/ContentElements/
+    }
+
+    dataProcessing {
+        1509614342 = TYPO3\CMS\Frontend\DataProcessing\FilesProcessor
+        1509614342 {
+            references.fieldName = background_image
+            as = backgroundImage
+        }
+
+        1509614343 = TYPO3\CMS\Frontend\DataProcessing\FilesProcessor
+        1509614343 {
+            references.fieldName = background_media
+            as = backgroundMedia
+        }
+
+
+        1532626753 = BK2K\BootstrapPackage\DataProcessing\FlexFormProcessor
+        1532626753 {
+            fieldName = background_image_options
+        }
+        1682424577 = BK2K\BootstrapPackage\DataProcessing\ArrayProcessor
+        1682424577 {
+            data {
+            }
+            as = frameAttributes
+        }
+    }
+
+    variables {
+        backendlayout = TEXT
+        backendlayout {
+            data = pagelayout
+            replacement.10 {
+                search = pagets__
+                replace =
+            }
+            ifEmpty = default
+        }
+    }
+
+    settings {
+        header {
+            defaultHeaderType = {$plugin.bootstrap_package_contentelements.header.defaultHeaderType}
+            class = {$plugin.bootstrap_package_contentelements.header.class}
+            date {
+                format = {$plugin.bootstrap_package_contentelements.header.date.format}
+            }
+        }
+        subheader {
+            class = {$plugin.bootstrap_package_contentelements.subheader.class}
+        }
+        lightbox {
+            cssClass = {$plugin.bootstrap_package_contentelements.lightbox.cssClass}
+            prefix = {$plugin.bootstrap_package_contentelements.lightbox.prefix}
+            image {
+                maxHeight = {$plugin.bootstrap_package_contentelements.lightbox.image.maxHeight}
+                maxWidth = {$plugin.bootstrap_package_contentelements.lightbox.image.maxWidth}
+            }
+        }
+        media {
+            additionalConfig {
+                autoplay = {$plugin.bootstrap_package_contentelements.media.additionalConfig.autoplay}
+                controls = {$plugin.bootstrap_package_contentelements.media.additionalConfig.controls}
+                loop = {$plugin.bootstrap_package_contentelements.media.additionalConfig.loop}
+                enablejsapi = {$plugin.bootstrap_package_contentelements.media.additionalConfig.enablejsapi}
+                showinfo = {$plugin.bootstrap_package_contentelements.media.additionalConfig.showinfo}
+                relatedVideos = {$plugin.bootstrap_package_contentelements.media.additionalConfig.relatedVideos}
+                modestbranding = {$plugin.bootstrap_package_contentelements.media.additionalConfig.modestbranding}
+                no-cookie = {$plugin.bootstrap_package_contentelements.media.additionalConfig.nocookie}
+            }
+        }
+        gallery {
+            columns {
+                1 {
+                    class = {$plugin.bootstrap_package_contentelements.gallery.columns.1.class}
+                }
+                2 {
+                    class = {$plugin.bootstrap_package_contentelements.gallery.columns.2.class}
+                    multiplier {
+                        default = 0.5
+                        xlarge = 0.5
+                        large = 0.5
+                        medium = 0.5
+                        small = 0.5
+                        extrasmall = 0.5
+                    }
+                    gutters {
+                        default = 8
+                        xlarge = 8
+                        large = 8
+                        medium = 8
+                        small = 8
+                        extrasmall = 8
+                    }
+                }
+                3 {
+                    class = {$plugin.bootstrap_package_contentelements.gallery.columns.3.class}
+                    multiplier {
+                        default = 0.3333
+                        xlarge = 0.3333
+                        large = 0.3333
+                        medium = 0.3333
+                        small = 0.3333
+                        extrasmall = 0.3333
+                    }
+                    gutters {
+                        default = 16
+                        xlarge = 16
+                        large = 16
+                        medium = 16
+                        small = 16
+                        extrasmall = 16
+                    }
+                }
+                4 {
+                    class = {$plugin.bootstrap_package_contentelements.gallery.columns.4.class}
+                    multiplier {
+                        default = 0.25
+                        xlarge = 0.25
+                        large = 0.25
+                        medium = 0.5
+                        small = 0.5
+                        extrasmall = 0.5
+                    }
+                    gutters {
+                        default = 24
+                        xlarge = 24
+                        large = 24
+                        medium = 8
+                        small = 8
+                        extrasmall = 8
+                    }
+                }
+                5 {
+                    class = {$plugin.bootstrap_package_contentelements.gallery.columns.5.class}
+                    multiplier {
+                        default = 0.2
+                        xlarge = 0.2
+                        large = 0.2
+                        medium = 0.3333
+                        small = 0.3333
+                        extrasmall = 0.5
+                    }
+                    gutters {
+                        default = 32
+                        xlarge = 32
+                        large = 32
+                        medium = 16
+                        small = 16
+                        extrasmall = 8
+                    }
+                }
+                6 {
+                    class = {$plugin.bootstrap_package_contentelements.gallery.columns.6.class}
+                    multiplier {
+                        default = 0.1666
+                        xlarge = 0.16666
+                        large = 0.16666
+                        medium = 0.3333
+                        small = 0.3333
+                        extrasmall = 0.5
+                    }
+                    gutters {
+                        default = 40
+                        xlarge = 40
+                        large = 40
+                        medium = 16
+                        small = 16
+                        extrasmall = 8
+                    }
+                }
+            }
+        }
+        responsiveimages {
+            variants {
+                default {
+                    breakpoint = 1400
+                    width = 1280
+                }
+                xlarge {
+                    breakpoint = 1200
+                    width = 1100
+                }
+                large {
+                    breakpoint = 992
+                    width = 920
+                }
+                medium {
+                    breakpoint = 768
+                    width = 680
+                }
+                small {
+                    breakpoint = 576
+                    width = 500
+                }
+                extrasmall {
+                    breakpoint = unset
+                    width = 374
+                }
+            }
+            backendlayout {
+                default {
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                simple {
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                2_columns {
+                    0 {
+                        multiplier {
+                            default = 0.75
+                            xlarge = 0.75
+                            large = 0.75
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    2 {
+                        multiplier {
+                            default = 0.25
+                            xlarge = 0.25
+                            large = 0.25
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                2_columns_25_75 {
+                    0 {
+                        multiplier {
+                            default = 0.75
+                            xlarge = 0.75
+                            large = 0.75
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    1 {
+                        multiplier {
+                            default = 0.25
+                            xlarge = 0.25
+                            large = 0.25
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                2_columns_50_50 {
+                    0 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    2 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                subnavigation_left {
+                    0 {
+                        multiplier {
+                            default = 0.75
+                            xlarge = 0.75
+                            large = 0.75
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                2_columns_offset_right {
+                    0 {
+                        multiplier {
+                            default = 0.6666
+                            xlarge = 0.6666
+                            large = 0.6666
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    2 {
+                        multiplier {
+                            default = 0.25
+                            xlarge = 0.25
+                            large = 0.25
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                3_columns {
+                    0 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    1 {
+                        multiplier {
+                            default = 0.25
+                            xlarge = 0.25
+                            large = 0.25
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    2 {
+                        multiplier {
+                            default = 0.25
+                            xlarge = 0.25
+                            large = 0.25
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                special_feature {
+                    30 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    31 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    32 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    33 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    34 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    35 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    36 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    37 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                            medium = 0.5
+                            small = 0.5
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                            medium = 40
+                            small = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                special_start {
+                    20 {
+                        multiplier {
+                            default = 0.3333
+                            xlarge = 0.3333
+                            large = 0.3333
+                            medium = 0.3333
+                        }
+                        gutters {
+                            default = 80
+                            xlarge = 80
+                            large = 80
+                            medium = 80
+                        }
+                    }
+                    21 {
+                        multiplier {
+                            default = 0.3333
+                            xlarge = 0.3333
+                            large = 0.3333
+                            medium = 0.3333
+                        }
+                        gutters {
+                            default = 80
+                            xlarge = 80
+                            large = 80
+                            medium = 80
+                        }
+                    }
+                    22 {
+                        multiplier {
+                            default = 0.3333
+                            xlarge = 0.3333
+                            large = 0.3333
+                            medium = 0.3333
+                        }
+                        gutters {
+                            default = 80
+                            xlarge = 80
+                            large = 80
+                            medium = 80
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                subnavigation_left_2_columns {
+                    0 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                        }
+                        gutters {
+                            default = 80
+                            xlarge = 80
+                            large = 80
+                        }
+                    }
+                    1 {
+                        multiplier {
+                            default = 0.25
+                            xlarge = 0.25
+                            large = 0.25
+                        }
+                        gutters {
+                            default = 80
+                            xlarge = 80
+                            large = 80
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                subnavigation_right {
+                    0 {
+                        multiplier {
+                            default = 0.75
+                            xlarge = 0.75
+                            large = 0.75
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+                subnavigation_right_2_columns {
+                    0 {
+                        multiplier {
+                            default = 0.5
+                            xlarge = 0.5
+                            large = 0.5
+                        }
+                        gutters {
+                            default = 80
+                            xlarge = 80
+                            large = 80
+                        }
+                    }
+                    2 {
+                        multiplier {
+                            default = 0.25
+                            xlarge = 0.25
+                            large = 0.25
+                        }
+                        gutters {
+                            default = 40
+                            xlarge = 40
+                            large = 40
+                        }
+                    }
+                    10 < shared.responsiveimages.footer.column
+                    11 < shared.responsiveimages.footer.column
+                    12 < shared.responsiveimages.footer.column
+                }
+            }
+        }
+        menuthumbnail {
+            title {
+                crop = {$plugin.bootstrap_package_contentelements.menu_thumbnail.title.crop}
+            }
+            subtitle {
+                crop = {$plugin.bootstrap_package_contentelements.menu_thumbnail.subtitle.crop}
+            }
+        }
+        menucard {
+            icon {
+                enable = {$plugin.bootstrap_package_contentelements.menu_card.icon.enable}
+                height = {$plugin.bootstrap_package_contentelements.menu_card.icon.height}
+                width = {$plugin.bootstrap_package_contentelements.menu_card.icon.width}
+            }
+            title {
+                crop = {$plugin.bootstrap_package_contentelements.menu_card.title.crop}
+            }
+            subtitle {
+                crop = {$plugin.bootstrap_package_contentelements.menu_card.subtitle.crop}
+            }
+            abstract {
+                crop = {$plugin.bootstrap_package_contentelements.menu_card.abstract.crop}
+            }
+        }
+        texticon {
+            icon {
+                default {
+                    height = {$plugin.bootstrap_package_contentelements.texticon.icon.default.height}
+                    width = {$plugin.bootstrap_package_contentelements.texticon.icon.default.width}
+                }
+                medium {
+                    height = {$plugin.bootstrap_package_contentelements.texticon.icon.medium.height}
+                    width = {$plugin.bootstrap_package_contentelements.texticon.icon.medium.width}
+                }
+                large {
+                    height = {$plugin.bootstrap_package_contentelements.texticon.icon.large.height}
+                    width = {$plugin.bootstrap_package_contentelements.texticon.icon.large.width}
+                }
+                awesome {
+                    height = {$plugin.bootstrap_package_contentelements.texticon.icon.awesome.height}
+                    width = {$plugin.bootstrap_package_contentelements.texticon.icon.awesome.width}
+                }
+            }
+        }
+        timeline {
+            date {
+                format = {$plugin.bootstrap_package_contentelements.timeline.date.format}
+            }
+        }
+        uploads {
+            preview {
+                height = {$plugin.bootstrap_package_contentelements.uploads.preview.height}
+                width = {$plugin.bootstrap_package_contentelements.uploads.preview.width}
+            }
+        }
+    }
+}

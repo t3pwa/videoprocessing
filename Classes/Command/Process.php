@@ -12,6 +12,10 @@ use Faeb\Videoprocessing\Processing\VideoTaskRepository;
 use Faeb\Videoprocessing\Processing\VideoProcessor;
 use Faeb\Videoprocessing\Processing\VideoProcessingTask;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Log\LogManager;
+// use TYPO3\CMS\Core\Utility\DebugUtility;
+
 class Process extends Command
 {
 
@@ -37,6 +41,10 @@ class Process extends Command
     protected function execute(InputInterface $input, OutputInterface $output, float $timeout = INF): int
     {
         $output->writeln("Video Process Command execute ...");
+
+        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $logger->notice('Video Process Command');
+
 
         /** @var TYPE_NAME $storedTasks */
 

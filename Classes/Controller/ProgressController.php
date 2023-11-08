@@ -32,6 +32,8 @@ class ProgressController
         /** @var VideoProcessingTask $highestTask */
         $highestTask = null;
         $videoTaskRepository = GeneralUtility::makeInstance(VideoTaskRepository::class);
+
+
         foreach ((array)$uids as $uid) {
             $task = $videoTaskRepository->findByUid($uid);
 
@@ -55,6 +57,12 @@ class ProgressController
             'remaining' => round($task->getEstimatedRemainingTime() * 1000),
             // TODO don't transfer an exact timestamp as the client may have a wrong clock
             'lastUpdate' => $task->getLastUpdate() * 1000,
+            'uid' => $task->getUid(),
+            'progressSteps' => $task->getProgressSteps(),
+            'processingDuration' => $task->getProcessingDuration()
+
+
+
         ];
     }
 

@@ -41,6 +41,11 @@ class FileProcessingServiceSlot
      */
     public function preFileProcess(FileProcessingService $fileProcessingService, DriverInterface $driver, ProcessedFile $processedFile, FileInterface $file, $context, array $configuration)
     {
+
+        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $logger->notice('FileProcessingSeriveSlot ');
+
+
         $needsProcessing = $processedFile->isNew()
             || (!$processedFile->usesOriginalFile() && !$processedFile->exists()) || $processedFile->isOutdated();
         if (!$needsProcessing) {

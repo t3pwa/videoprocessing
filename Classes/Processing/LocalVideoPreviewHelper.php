@@ -253,13 +253,17 @@ class LocalVideoPreviewHelper
 
                 // Important to run progress now
                 $progress->current();
+
+                
+
+
                 sleep(2);
 
                 // var_dump($progress);
 
                 if (file_exists($tempFilePathPrefix) ) {
                     if (filesize($tempFilePathPrefix) < 100 ) {
-                        var_dump("<br> ffmpeg fail, empty file<hr>");
+                        // var_dump("<br> ffmpeg fail, empty file<hr>");
                     }
                 } else {
                     print('<br> ffmpeg fail, no file found >>>' . $tempFilePathPrefix . '<<< <hr>');
@@ -494,7 +498,7 @@ class LocalVideoPreviewHelper
 
         $process = $this->runner->run($commandStr);
 
-        $logger->notice("run ffmpeg command", ['command' => $commandStr]);
+        $logger->notice("[LocalVideo] run ffmpeg command", ['command' => $commandStr]);
 
         $output = '';
         foreach ($process as $line) {

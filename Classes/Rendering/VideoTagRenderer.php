@@ -103,6 +103,9 @@ class VideoTagRenderer implements FileRendererInterface
         }
 */
 
+        var_dump($file->hasProperty('autoplay'));
+        var_dump($file->getProperty('autoplay'));
+
         if ($file->getProperty('autoplay') > 0) {
             $attributes['autoplay'] = 'autoplay';
         }
@@ -112,22 +115,12 @@ class VideoTagRenderer implements FileRendererInterface
             $attributes['muted'] = 'muted';
         }
 
-
-        // var_dump($file->hasProperty('muted')); die();
-
         // ToDo if ext ... is installed
         if ($file->hasProperty('muted') && $file->getProperty('muted') > 0) {
             $attributes['muted'] = 'muted';
         }
 
-        // if ($options['loop'] ?? $autoplay > 1) {
-        if ($file->hasProperty('autoplay') && $file->getProperty('autoplay') > 1) {
-            $attributes['loop'] = 'loop';
-        }
 
-        if ($file->hasProperty('loop') && $file->getProperty('loop') > 0) {
-            $options['loop'] = 'loop';
-        }
 
         // if ($options['controls'] ?? $autoplay < 3) {
         if ($file->hasProperty('autoplay') && $file->getProperty('autoplay') < 3) {
@@ -135,10 +128,20 @@ class VideoTagRenderer implements FileRendererInterface
             $attributes['controls'] = 'controls';
         }
 
+        // if ($options['loop'] ?? $autoplay > 1) {
+        if ($file->hasProperty('autoplay') && $file->getProperty('autoplay') > 1) {
+            $attributes['loop'] = 'loop';
+        }
+        if ($file->hasProperty('loop') && $file->getProperty('loop') > 0) {
+            $options['loop'] = 'loop';
+        }
+
+
 //        if ($options['playsinline'] ?? $autoplay >= 1) {
         if ($file->hasProperty('autoplay') && $file->getProperty('autoplay') >= 1) {
             $attributes['playsinline'] = 'playsinline';
         }
+
 
         foreach ($this->getAttributes() as $key) {
             if (!empty($options[$key])) {
@@ -161,33 +164,57 @@ class VideoTagRenderer implements FileRendererInterface
         // var_dump( " has processed video sources: ", $this->hasProcessedVideoSources($sources) );
 
         // if (empty($sources) && ($options['progress'] ?? true)) {
-
-
         // has PROCESSED Video Sources, that are not the original upload? !?!? what do then? Preview?
+        // $conf['showProgress'] 0 always, 3 never
 
-        if ( !$this->hasProcessedVideoSources($sources) && ($options['progress'] ?? true)) {
+        $conf = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)->get('videoprocessing');
+
+        $attributes['preview_image'] = $this->getPosterImageFromSources($sources);
+
+        // https://stackoverflow.com/questions/26778714/video-play-on-hover
+//        $attributes['onmouseover'] = ["this.play()"];
+//        $attributes['onmouseout'] = ["this.pause();this.currentTime=0;"];
+        /*
+        onmouseover="this.play()"
+        onmouseout="this.pause();this.currentTime=0;"
+        */
+
+        if ( $conf['showProgress'] == 0 && !$this->hasProcessedVideoSources($sources) && ($options['progress'] ?? true)) {
             // TODO Process Render refactoring, still clumsy
-
             // $sources[] = ProgressViewHelper::renderHtml($videos);
             $progress = ProgressViewHelper::renderHtml($videos);
 
+            // var_dump("$options progress", $options['progress'] );
 
+            $tag = sprintf('<!-- not-processed, yet -->' );
+            $tag .= sprintf('<video onmouseover="this.play()"
+                onmouseout="this.pause();this.currentTime=0;" 
+                data-status="not-processed" 
 
-//            $attributes['preview_image'] = $this->getPosterImageFromSources($sources);
+                data-autoplay= "' . $file->getProperty('autoplay') . '"
 
-            // $tag = sprintf('is processing');
-            $tag = sprintf('<video data-status="still-processing" %s>%s</video>',
+                %s >%s</video>',
                 implode(' ', $attributes),
-                implode('', $sources)
+                implode('', $sources),
+//                implode('', $options)
             );
             $tag .= $progress;
             self::dispatch('afterProgressTag', [&$tag, $attributes, $sources], func_get_args());
         } else {
 
-
 //            $attributes['preview_image'] = $this->getPosterImageFromSources($sources);
 
-            $tag = sprintf('<video %s data-status="has-processed-sources">%s</video>',
+            $tag = sprintf('<video 
+                
+                onmouseover="this.play();this.setAttribute(\'controls\',\'controls\');"
+                // onmouseout="this.pause();"  
+                
+                %s 
+                data-status="has-processed-sources"
+                
+                data-autoplay= "' . $file->getProperty('autoplay') . '"
+                
+                >%s</video>',
                 implode(' ', $attributes),
                 implode('', $sources)
             );
@@ -200,18 +227,26 @@ class VideoTagRenderer implements FileRendererInterface
 
     protected function getPosterImageFromSources ($sources) {
 
+        // var_dump("sources in getPosterImage", $sources);
 
-            // Todo this->getPosterImagefromSources()
-            preg_match_all( '/<\s*source[^>]src="(.*?)"\s?(.*?)>/i', $sources[0], $match);
-            // orginial file, not processed
-            //var_dump( "first source B", $file->getPublicUrl($usedPathsRelativeToCurrentScript) ) ;
-            // TODO $poster = $file->getPublicUrl($usedPathsRelativeToCurrentScript);
-            $poster = $match[1][0];
-            // var_dump("poster: >>>>", $poster);
-            $posterImageFilePath = $poster;
-            // $attributes['preview_image'] = 'poster="' . $posterImageFilePath . '"';
+        preg_match_all( '/<\s*source[^>]src="(.*?)"\s?(.*?)>/i', $sources[0], $match);
+
+        // orginial file, not processed
+        // var_dump( "first source B", $file->getPublicUrl($usedPathsRelativeToCurrentScript) ) ;
+        // TODO $poster = $file->getPublicUrl($usedPathsRelativeToCurrentScript);
+        $poster = $match[1][0];
+        // var_dump("poster: >>>>", $poster);
+        $posterImageFilePath = $poster;
+        // $attributes['preview_image'] = 'poster="' . $posterImageFilePath . '"';
+        if ( str_contains($poster,".png") ) {
+
+//            var_dump("sources in getPosterImage, match:", $poster);
+
+            $posterImageFilePath = substr($posterImageFilePath, 0, strpos($posterImageFilePath, "#"));
+//            var_dump("$posterImageFilePath without hash:", $posterImageFilePath);
+
             return 'poster="' . $posterImageFilePath . '"';
-
+        }
 
     }
 
@@ -240,6 +275,7 @@ class VideoTagRenderer implements FileRendererInterface
 */
             // ToDo if in list of video filetypes
             //if ( $typematch[1] == "video/mp4" || $typematch[1] == "video/webm" ) {
+
             if  (
                     (
                         // ToDo mimetype from list of videos
@@ -253,15 +289,17 @@ class VideoTagRenderer implements FileRendererInterface
             ) {
                 return true;
             }
+
         }
         return false;
     }
 
     protected function buildSources(FileInterface $file, array $options, $usedPathsRelativeToCurrentScript): array
     {
+
+        // var_dump("build sources file", $file->getPublicUrl($usedPathsRelativeToCurrentScript));
         // do not process a processed file
         if ($file instanceof ProcessedFile) {
-
 
             if ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
                 $GLOBALS['TSFE']->addCacheTags(["processed_video_{$file->getUid()}"]);
@@ -301,9 +339,9 @@ class VideoTagRenderer implements FileRendererInterface
 
             // only add video sources.
             // comment out, add poster image resource, if added to config, open ToDo !!!!
-            if (!$video->exists()) {
-                continue;
-            }
+//            if (!$video->exists()) {
+//                continue;
+//            }
 
             /*
              * TODO depricated call of $GLOBALS['TSFE'], see also Videpprocessor l. 100
@@ -312,13 +350,33 @@ class VideoTagRenderer implements FileRendererInterface
             }
             */
 
+
+            // ToDo replace $GLOBALS['TSFE'] vgl videoprocessor
+
+            $this->cacheManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager');
+            // $this->cacheManager->flushCachesInGroupByTag('pages', 'RecordName_' . $item->getUid());
+
+            $this->cacheManager->getCache('cache_pages')->flushByTag('RecordName_' . $video->getUid());
+            $this->cacheManager->getCache('cache_pagesection')->flushByTag('RecordName_' . $video->getUid());
+
+            // $this->cacheManager->flushCachesInGroupByTag('pages', 'RecordName_' . $task->getConfigurationChecksum() );
+            // $this->cacheManager->getCache('cache_pages')->flushByTag('RecordName_' . $task->getConfigurationChecksum() );
+            // $this->cacheManager->flushCachesInGroupByTag('pages', $task->getConfigurationChecksum());
+
+            // var_dump ("sources1", $sources);
+
+
+            // ToDo: better add to sources?
             $sources[] = sprintf(
                 // simple poster image video test, acctually it's the video starttime
                 // '<source src="%s#t=5" type="%s" />',
-                '<source src="%s" type="%s" class="configuration" />',
+                '<source src="%s#t=5" type="%s" class="configuration" />',
                 htmlspecialchars($video->getPublicUrl($usedPathsRelativeToCurrentScript)),
                 htmlspecialchars($video->getMimeType())
             );
+
+            // var_dump ("sources2", $sources);
+
         }
 
         return [$sources, $videos];

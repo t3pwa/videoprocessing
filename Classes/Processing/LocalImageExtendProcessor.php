@@ -29,6 +29,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 use TYPO3\CMS\Core\Resource\Processing\LocalImageProcessor;
 
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\DebugUtility;
 
 
@@ -51,6 +52,11 @@ class LocalImageExtendProcessor extends LocalImageProcessor
      */
     public function canProcessTask(TaskInterface $task): bool
     {
+        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $logger->notice('LocalImageExtend can process task?' );
+
+
+
 //        \TYPO3\CMS\Core\Utility\DebugUtility::debug("canProcessTask in LocalImageExtend");
 //        var_dump($task->getType());
 //        var_dump($task->getName());
@@ -67,10 +73,18 @@ class LocalImageExtendProcessor extends LocalImageProcessor
      */
     public function processTask(TaskInterface $task): void
     {
-        // var_dump( "[processTask] \$this->checkForExistingTargetFile". $this->checkForExistingTargetFile($task) );
+        // var_dump( "[LocalImage processTask] \$this->checkForExistingTargetFile". $this->checkForExistingTargetFile($task) );
+
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $this->logger->notice('LocalImage processTask');
+
         if ($this->checkForExistingTargetFile($task)) {
-            var_dump('exists already, return');
+            // var_dump('exists already, return');
+            $this->logger->notice('exists already, return' );
             return;
+        } else {
+            // var_dump('target file not exists, continue');
+            $this->logger->notice('not exists, cont' );
         }
 
         $this->processTaskWithLocalFile($task, null);
@@ -89,6 +103,10 @@ class LocalImageExtendProcessor extends LocalImageProcessor
     {
         // print( "<strong>processTaskWithLocalFile:</strong> >>>".$localFile."<<< type:" . gettype($localFile) );
 
+
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $this->logger->notice(sprintf('[LocalImageExtend] Processing task file %s', $localFile));
+
         // print ("process with helper: " . $task->getName() );
         $helper = $this->getHelperByTaskName($task->getName());
         // print ("use the right helper?:". $this->getHelperByTaskName($task->getName()) );
@@ -97,13 +115,10 @@ class LocalImageExtendProcessor extends LocalImageProcessor
         try {
             if ($localFile === null) {
                 // var_dump("[processTaskWithLocalFile] yes process LOCAL file NULL, task");
-
                 // Should this return processed target file? no, still transient at this point
-
                 $result = $helper->process($task);
-
             } else {
-                var_dump("[localFile YES exists] in try processWithLocalFile, dont process");
+                // var_dump("[localFile YES exists] in try processWithLocalFile, dont process");
                 $result = $helper->processWithLocalFile($task, $localFile);
             }
             // var_dump ("[after process] check results ...");
@@ -132,11 +147,17 @@ class LocalImageExtendProcessor extends LocalImageProcessor
                 ]);
 
                 try {
+                    // Injects a local file, which is a processing result into the object.
                     $task->getTargetFile()->updateWithLocalFile($result['filePath']);
+
+                    $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+                    $this->logger->info(sprintf('Processing task updated with local file', $result['filePath']));
+
+
                 } finally {
 //                    var_dump("updatewith local file");
                 }
-//                $task->setExecuted(true);
+                $task->setExecuted(true);
 
                 // var_dump ( $imageDimensions = $this->getGraphicalFunctionsObject()->getImageDimensions($result['filePath']) );
 
@@ -144,13 +165,14 @@ class LocalImageExtendProcessor extends LocalImageProcessor
                 // $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
                 // $storageId = $resourceFactory->getDefaultStorage();
 
-
 //                $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
 //                $defaultStorage = $storageRepository->getDefaultStorage();
 
 //                $identifier = $result['filePath'];
                 // var_dump( $task->getSourceFile() );
                 // $identifier = $task->getSourceFile();
+
+
 
                 /*
                 $dirname = dirname($result['filePath']);
@@ -180,8 +202,6 @@ class LocalImageExtendProcessor extends LocalImageProcessor
                 // var_dump("props:" . $file->getProperties());
 
 
-
-
 /*
                 $fileRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\FileRepository::class);
                 $fileObjects = $fileRepository->findByRelation('tt_content', 'assets', $file->getUid());
@@ -198,23 +218,18 @@ class LocalImageExtendProcessor extends LocalImageProcessor
                 // $task->setTargetFile($file);
 
 
-// ************** ToDo, do this if failes?
-                // Injects a local file, which is a processing result into the object.
-                // $task->getTargetFile()->updateWithLocalFile($result['filePath']);
+
 
                 // ToDo add this file in storage to ... orignal file obj?!
 
-                //$task->getTargetFile()->setDescription("desc test added dyn");
 
 //                var_dump ("isprocessed: ". $task->getTargetFile()->isProcessed() . "<hr>" );
 //                var_dump ("name: ". $task->getTargetFile()->getName() . "<hr>" );
 //                var_dump ( implode( " ", $task->getTargetFile()->getProperties()) . "<hr>" );
 
-//                var_dump("<hr>after update");
-                // var_dump($task->getTargetFile() );
 
             } else {
-                var_dump("<hr>ELSE no valid processing result<br>");
+                // var_dump("<hr>ELSE no valid processing result<br>");
                 // var_dump("result:", $result['filePath']);
                 // var_dump("exists?", file_exists($result['filePath']) );
 
@@ -227,9 +242,9 @@ class LocalImageExtendProcessor extends LocalImageProcessor
             // @todo: Swallowing all exceptions including PHP warnings here is a bad idea.
             // @todo: This should be restricted to more specific exceptions - if at all.
             // @todo: For now, we at least log the situation.
-            // $this->logger->error(sprintf('Processing task of image file'), ['exception' => $e]);
+            $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $this->logger->error(sprintf('Processing task of image file'), ['exception' => $e]);
             $task->setExecuted(false);
-
             $msg = "";
             $msg .= "in helper process task? " . $e->getMessage();
             // var_dump("failed process task<hr>" . $msg);
@@ -274,7 +289,9 @@ class LocalImageExtendProcessor extends LocalImageProcessor
         // explicitly check for the raw filename here, as we check for files that existed before we even started
         // processing, i.e. that were processed earlier
 
+
         // var_dump("[check for existing...] \$task->getTargetFileName()". $task->getTargetFileName() );
+        $this->logger->notice('[LocalImageExtend] [check for existing...] \$task->getTargetFileName() ?  ',  ['targetFileName' => $task->getTargetFileName() ]  );
 
         if ($processingFolder->hasFile($task->getTargetFileName())) {
 

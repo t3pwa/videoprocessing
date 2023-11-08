@@ -21,3 +21,6 @@ videoQuality = 0.8
 
 # cat=default settings; type=options[50% ~60 kbit/s (HE-AAC，might still be fine if fdk is enabled)=0.5,60% ~80 kbit/s (HE-AAC)=0.6,70% ~102 kbit/s=0.7,80% ~128 kbit/s (recommended)=0.8,90% ~158 kbit/s=0.9,100% ~192 kbit/s=1.0]; label=Audio Quality:Defines the audio quality. The bitrate example a rough estimate on the aac bitrate which is just for orientation purposes. The actually bitrate is variable if fdk is enabled. The aac preset will resort to aac-he when the bitrate is <= 80 kbit/s so lower qualities might not sound as bad as you think, again, if fdk is available. webm/vp9 video will use opus audio which always uses variable bitrate and it is defined to be up to 25% lower since the codec is more efficient.
 audioQuality = 0.8
+
+# cat=default settings; type=options[never=0,only in dev mode=1,only if BE user logged in=2,always=3]; label=Show progress:Show processing progress under videotag
+showProgress = 0

@@ -12,9 +12,11 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class ProgressViewHelper extends AbstractViewHelper
 {
-    const POLLING_INTERVAL = 15;
+    const POLLING_INTERVAL = 5;
     const MAX_PREDICTED_PROGRESS = 20;
     private static $counter = 0;
+
+    private static $processCounter = 0;
 
     protected $escapeChildren = false;
     protected $escapeOutput = false;
@@ -47,7 +49,7 @@ class ProgressViewHelper extends AbstractViewHelper
     public static function renderHtml($argument)
     {
         // $content = 'ProgressViewhelper::renderHtml()';
-
+//        \TYPO3\CMS\Core\Utility\DebugUtility::debug($argument);
         $content = '';
 
         if ($argument instanceof \Iterator) {
@@ -91,10 +93,10 @@ class ProgressViewHelper extends AbstractViewHelper
                 }
 
                 if ($item == NULL) {
+                    return false;
                     // var_dump($item->getUid());
-                    throw new \RuntimeException("The given VideoProcessingTask has no item.");
+                    // throw new \RuntimeException("The given VideoProcessingTask has no item.");
                 }
-                /*
 
                 /*
                                 if (gettype($item) != NULL) {
@@ -102,6 +104,8 @@ class ProgressViewHelper extends AbstractViewHelper
                                     throw new \RuntimeException("The given VideoProcessingTask has no item.");
                                 }
                 */
+
+
 
 
                 if ($item->getUid()) {
@@ -114,12 +118,14 @@ class ProgressViewHelper extends AbstractViewHelper
             $type = is_object($item) ? get_class($item) : gettype($item);
             throw new \RuntimeException("Got unknown $type as a task identifier.");
         }
-
+/*
         $content .= '<span>
             $uids:&nbsp;'. implode(', ', $uids)
             . '</span>';
+*/
 
-        $id = 'tx_videoprocessing_progress_' . self::$counter++;
+//        $id = 'tx_videoprocessing_progress_' . self::$counter++;
+        $class = 'tx_videoprocessing_progress';
 
         /* not that way, old way works
         $content .= '
@@ -136,13 +142,13 @@ class ProgressViewHelper extends AbstractViewHelper
         // $item->getSourceFile();
         // var_dump($item->getSourceFile());
 
-
+/*
         $videoAttributes = [
             'id="' . $id . '"',
-
             'data-update-url="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '"',
             'data-uids="' . implode('-', $uids) . '"',
         ];
+*/
 /*
  *
  * only in frontend ?
@@ -153,26 +159,60 @@ class ProgressViewHelper extends AbstractViewHelper
             '<source src="'. $item->getSourceFile()->getPublicUrl() . '" />'
         );
 */
-        $progressAttributes = [
-            'id="' . $id . '"',
-            'data-update-url="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '"',
-            'data-progress=""',
 
-        ];
 
-        // Todo move content specific styles to extension frontend css
-        $progressHtml = sprintf('
-             <div class="progress">
+
+        $progressHtml = "<!-- multiple progress bars -->";
+
+        foreach ($uids as &$uid) {
+
+            $id = 'tx_videoprocessing_progress_' . self::$counter++;
+
+            $progressAttributes = [
+//                'id="' . $id . '"',
+//                'class="' . $class . '"',
+//                'data-uid="' .  $uid . '"',
+                'data-num=' . self::$processCounter++ ,
+//                'data-update-url="' . htmlspecialchars(ProgressEid::getUrl($uid)) . '"',
+            ];
+
+            $progressBarAttributes = [
+                'id="' . $id . '"',
+                'class="' . $class . '"',
+
+                'data-uid="' .  $uid . '"',
+                'data-uids="' . implode('-', $uids) . '"',
+
+//                'data-num=' . self::$processCounter++ ,
+                'data-update-url="' . htmlspecialchars(ProgressEid::getUrl($uid)) . '"',
+            ];
+
+
+
+            $progressHtml .= sprintf('
+             <div %s class="progress">
                 <div %s class="progress-bar" role="progressbar">%s</div>
              </div>
-        ',
-        // htmlspecialchars(ProgressEid::getUrl(...$uids)),
-            implode(
-                ' ',
-                $progressAttributes
-            ),
-            '<a href="' . htmlspecialchars(ProgressEid::getUrl(...$uids)) . '">...</a>'
-        );
+            ',
+                // htmlspecialchars(ProgressEid::getUrl(...$uids)),
+
+                implode(
+                    ' ',
+                    $progressAttributes
+                ),
+
+
+                implode(
+                    ' ',
+                    $progressBarAttributes
+                ),
+
+                '<a href="' . htmlspecialchars(ProgressEid::getUrl($uid)) . '">...</a>'
+            );
+
+        }
+
+
 
         $content .= $progressHtml;
 //        $content .= $videoContent;
@@ -186,117 +226,165 @@ class ProgressViewHelper extends AbstractViewHelper
         $jsonId = json_encode($id, JSON_UNESCAPED_SLASHES);
         $pollingInterval = json_encode(self::POLLING_INTERVAL * 1000, JSON_UNESCAPED_SLASHES);
         $maxPredictedProgress = json_encode(self::MAX_PREDICTED_PROGRESS * 1000, JSON_UNESCAPED_SLASHES);
+
+
+//        var_dump($pollingInterval); // 15 * 1000
+//        var_dump($maxPredictedProgress); // 20 * 1000
+
+
         $script = <<<JavaScript
-(function () {
-    var element = document.getElementById($jsonId),
-        latestProgress = 0.0,
-        remaining = 0,
-        lastUpdate = 0,
-        updateProperties = function (o) {
-            latestProgress = Number(o.progress);
-            remainingTime = Number(o.remaining) || Infinity;
-            lastUpdate = Number(o.lastUpdate);
-            lastStatus = String(o.status);
-        },
-        lastContent = element.textContent,
-        updateTimeout = 0,
-        requestProperties = function (callback) {
-            clearTimeout(updateTimeout);
-            var xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                updateProperties(JSON.parse(xhr.responseText));
-                updateTimeout = setTimeout(requestProperties, $pollingInterval);
-                callback && callback();
-            };
-            
-            console.log(element.dataset.updateUrl);
-            
-            xhr.open('GET', element.dataset.updateUrl, true);
-            xhr.send();
-        },
-        render = function () {
-            // check if the target node is still within the document and stop everything if not
-            if (document.getElementById($jsonId) !== element) {
-                clearTimeout(updateTimeout);
-                return;
-            }
+var renderProgress = [];
+(renderProgress[$jsonId] = function (jsonId = $jsonId) {
+    
+    this.jsonId = jsonId;
+    console.log("this.jsonId, jsonId:", this.jsonId, jsonId);
+    
+    console.log(">>>>>000 jsonId", jsonId, $jsonId, this.jsonId);
+    
+    this.element = document.getElementById(this.jsonId),
+    this.latestProgress = 0.0,
+    this.remaining = 0,
+    this.lastUpdate = 0,
+    this.updateProperties = function (o) {
         
-            // calculate the progress until it should be finished
-            var progress = Math.min(1.0, Math.min($maxPredictedProgress, Date.now() - lastUpdate) / remainingTime),
-            newContent = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1) + '%';
-            console.log(progress);
-            // element.style.background-color: hsl(progress 100% 50%);
+        this.o = o
+        console.log("update props:", this.jsonId, $jsonId, this.o);
+    
+        console.log("11111", $jsonId, this.jsonId, jsonId, o, this.o);
+        
+        this.uid = String(o.uid);
+        console.log("!!! this.uid:", this.uid, "jsonId:", jsonId, $jsonId, this.jsonId);
+        
+        console.log("updateProperties", jsonId, $jsonId, this.jsonId)
+    
+        this.latestProgress = Number(o.progress);
+        // console.log("latestProgress", this.uid, this.latestProgress, jsonId);
+        
+        this.remainingTime = Number(o.remaining) || Infinity;
+        // console.log("this.remaining time" , this.remainingTime, jsonId);
+        
+        this.lastUpdate = Number(o.lastUpdate, jsonId);
+        this.lastStatus = String(o.status, jsonId);
+        
+        this.processingDuration = String(o.processingDuration);
+        // console.log("processingDuration ", jsonId, this.uid, this.processingDuration);
+        
+    },
+    this.lastContent = this.element.textContent,
+    this.updateTimeout = 0,
+    this.requestProperties = function (callback, jsonId) {
+        console.log("requestProperties", jsonId)
+        clearTimeout(this.updateTimeout);
+        xhr = new XMLHttpRequest();
+        xhr.onload = function (jsonId) {
             
-            element.style.width = newContent;
+            this.response = xhr.responseText;
+            console.log("this.response", jsonId, this.response);
+            
+            this.updateProperties( JSON.parse( this.response ) );
+            
+            this.updateTimeout = setTimeout(
+                this.requestProperties, 
+                $pollingInterval
+                );
                 
-            /*
-            if (lastStatus == 'new') {
-                // newContent = 'new in queue';
-                element.style.width = '33%';
-                element.style.background = 'lightgreen';
-                element.textContent = newContent;
-                lastContent = newContent;
-            }
-            */
-            /*  
-            if (lastStatus == 'failed') {
-                newContent = 'failed';
-                element.style.width = '100%';
-                element.style.background = 'red';
-                element.textContent = newContent;
-                lastContent = newContent;
-            }
-            */
+            callback && callback();
+        };
+        
+        console.log("updateUrl", this.element.dataset.updateUrl);
+        
+        xhr.open('GET', this.element.dataset.updateUrl, true);
+        xhr.send();
+    },
+    render = function () {
+        // this.uid = uid;
+        // check if the target node is still within the document and stop everything if not
 
-            if (lastContent !== newContent) {
-//                element.style.background = 'blue'
-//                element.style.color = 'white'
-//                element.style.width = newContent
-//                element.style.minwidth = '5%'
- 
-                element.dataset.progress = newContent;
-                element.textContent = newContent;
-                lastContent = newContent;
-            }
-
-            if (progress < 0.1) {
-                  newContent = 'fresh';
-//                element.style.min-width = '10%';
-//                element.style.background = 'orange';
-
-                element.textContent = ''+newContent;
-                lastContent = newContent;
+        /*
+        if (document.getElementById($jsonId) !== this.element) {
+            clearTimeout(updateTimeout);
+            console.log("not in focus?")
+            return;
+        }
+        */
+    
+        // calculate the progress until it should be finished
+        // console.log("maxPredictedProgress "+uid+"", $maxPredictedProgress);
+        
+        this.progress = Math.min(1.0, Math.min($maxPredictedProgress, Date.now() - lastUpdate) / this.remainingTime),
+            newContent = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1) + '%';
             
-            }
+        console.log("render: this.progress " + this.uid + ": ", this.progress);                
+        
+        this.newContent = ((this.latestProgress + (1.0 - this.latestProgress) * this.progress) * 100).toFixed(1) + '%';
+        this.progressInt = ((this.latestProgress + (1.0 - this.latestProgress) * this.progress) * 100).toFixed(1);
+        
+        console.log(this.uid, this.progress, this.progressInt, this.newContent, this.processingDuration);
+        
+//            this.element.style.width = newContent;
+//            this.element.style.background = 'hsl('+progressInt+' 100% 50%)'
 
+        if (this.lastContent !== this.newContent) {
+            this.element.dataset.progress = this.newContent;
+            this.element.dataset.uid = this.uid;
+            this.element.style.width = this.newContent
+            this.element.textContent = this.newContent;
+            this.element.style.background = 'hsl('+progressInt+' 100% 50%)'
+            this.lastContent = this.newContent;
+        } else {
+            console.log("no change")
+        }
+
+        if (this.progressInt < 0.01) {
+            this.element.textContent = '['+uid+']: '+ this.newContent;
+        }
+
+        if (this.progress < 1.0) {
             
-            if (progress < 1.0) {
-
-                var milliseconds = remainingTime / (1.0 - latestProgress) / 1000;
-                setTimeout(render, Math.max(100, Math.min(500, milliseconds)));
-            } else {
-                clearTimeout(updateTimeout);
-                if (document.hasFocus() && lastUpdate + 5000 > Date.now()) {
-                    setTimeout(function () {
-                        if (!window.video_is_reloading) {
-                            location.reload();
-                            window.video_is_reloading = true;
-                        }
-                    }, 5000);
-                }
+            this.milliseconds = this.remainingTime / (1.0 - this.latestProgress) / 1000;
+            
+            // console.log("this ms", this.milliseconds);
+            // console.log("set timeout while still in progress", Math.max(2000, Math.min(1000, this.milliseconds)) )
+            
+            setTimeout(
+                this.render()
+                // Math.max(4000, Math.min(3000, this.milliseconds))
+            ).bind(Math.max(4000, Math.min(3000, this.milliseconds)));
+            
+        } else {
+            console.log("finished?");
+            // clearTimeout(updateTimeout);
+            
+            if (document.hasFocus() && this.lastUpdate + 5000 > Date.now()) {
+                console.log("setTimeout");
+                setTimeout(function () {
+                    if (!window.video_is_reloading) {
+                        location.reload();
+                        window.video_is_reloading = true;
+                    }
+                // }, 5000);
+                }.bind(2500));
             }
             
             
         }
+            
+    } // render()
     ;
-    requestProperties(render);
+    
+    this.requestProperties( render() );
 })();
+
+if ($jsonId == "tx_videoprocessing_progress_0") {
+    renderProgress[$jsonId]();
+}
+
 JavaScript;
 
         // minify a bit
         // TODO dont minify on development environment for debugging
         // return preg_replace('#\s*\n\s*|\s*//[^\n]*\s*|\s*([,;!=()*/\n+-])\s*#', '\\1', $script);
 
-        return $script;
+//        return $script;
     }
 }

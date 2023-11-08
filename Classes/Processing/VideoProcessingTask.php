@@ -19,8 +19,9 @@ class VideoProcessingTask extends AbstractTask
     const TYPE = 'Video';
     // const TYPE = 'Videoprocessing';
     const NAME = 'CropScale';
-
     const STATUS_NEW = 'new';
+
+    const STATUS_PROCESSING = 'processing';
     const STATUS_FINISHED = 'finished';
     const STATUS_FAILED = 'failed';
 
@@ -115,7 +116,17 @@ class VideoProcessingTask extends AbstractTask
     {
         if (!$this->isExecuted()) {
             return self::STATUS_NEW;
+
         }
+/*
+        if ($this->isExecuted()) {
+            // return self::STATUS_PROCESSING;
+            // return self::STATUS_NEW;
+            return self::STATUS_FINISHED;
+
+        }
+*/
+
 
         if ($this->isSuccessful()) {
             return self::STATUS_FINISHED;
@@ -131,6 +142,12 @@ class VideoProcessingTask extends AbstractTask
                 $this->executed = false;
                 $this->successful = false;
                 break;
+
+            case self::STATUS_PROCESSING:
+                $this->executed = true;
+                $this->successful = false;
+                break;
+
             case self::STATUS_FAILED:
                 $this->setExecuted(false);
                 break;
@@ -215,25 +232,9 @@ class VideoProcessingTask extends AbstractTask
             return 0.0;
         }
 
-        if (!$timespan != 0 && $progressSpan != 0 && $remainingProgress != 0 ) {
-            $remainingTime = $timespan / ($progressSpan / $remainingProgress);
-            // secretly add a bit so that the estimate is actually too high ~ better correct down than up
-            return $remainingTime * 1.05;
-        } else {
-            // var_dump ("$timespan", $timespan);
-            // var_dump ("$progressSpan", $progressSpan);
-            // var_dump ("$remainingProgress", $remainingProgress);
-
-            if ($timespan < 1) {
-                return 0;
-            } else {
-                // Somthing went wrong?!
-                throw new \RuntimeException("Expection Division by Null" );
-            }
-
-        }
-
-
+        $remainingTime = $timespan / ($progressSpan / $remainingProgress);
+        // secretly add a bit so that the estimate is actually too high ~ better correct down than up
+        return $remainingTime * 1.05;
     }
 
     public function getLastUpdate(): int

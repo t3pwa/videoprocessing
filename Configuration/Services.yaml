@@ -10,35 +10,43 @@ services:
   Faeb\Videoprocessing\ViewHelpers\ProgressEid:
     public: true
 
+  Faeb\Videoprocessing\ViewHelpers\FrameViewHelper:
+    autowire: true
+    autoconfigure: true
+    public: true
 
-  # Image File (for Videos)
-  Faeb\Videoprocessing\EventListener\ImageFileProcessingEvent:
-    tags:
-      - name: event.listener
-        # identifier: 'BeforeFileProcessingEvent'
-        identifier: 'AfterFileProcessingEvent'
+# Poster Image File (from Videos)
+#  Faeb\Videoprocessing\EventListener\ImageFileProcessingEvent:
+#    tags:
+#      - name: event.listener
+#        identifier: 'BeforeFileProcessingEvent'
+#        # identifier: 'AfterFileProcessingEvent'
+#        # identifier: 'AfterFileAddedEvent'
 
-  # Video File, two separate Event Listeners?
+  # Video File, two separate Event Listeners!
   Faeb\Videoprocessing\EventListener\VideoFileProcessingEvent:
     tags:
       - name: event.listener
-        identifier: 'AfterFileAddedToIndexEvent'
+        #identifier: 'AfterFileProcessingEvent'
+        # identifier: 'AfterFileAddedToIndexEvent'
+        identifier: 'BeforeFileProcessingEvent'
+        #before: 'BeforeFileProcessingEvent'
 
 
-  Faeb\Videoprocessing\EventListener\EnrichFileMetaDataEvent:
-    tags:
-      - name: event.listener
-        identifier: 'EnrichFileMetaDataEvent'
+#  Faeb\Videoprocessing\EventListener\EnrichFileMetaDataEvent:
+#    tags:
+#      - name: event.listener
+#        identifier: 'EnrichFileMetaDataEvent'
 
-  Faeb\Videoprocessing\EventListener\AfterFileMetaDataUpdatedEvent:
-    tags:
-      - name: event.listener
-        identifier: 'AfterFileMetaDataUpdatedEvent'
+#  Faeb\Videoprocessing\EventListener\AfterFileMetaDataUpdatedEvent:
+#    tags:
+#      - name: event.listener
+#        identifier: 'AfterFileMetaDataUpdatedEvent'
 
-  Faeb\Videoprocessing\EventListener\AfterFileMetaDataCreatedEvent:
-    tags:
-      - name: event.listener
-        identifier: 'AfterFileMetaDataCreatedEvent'
+#  Faeb\Videoprocessing\EventListener\AfterFileMetaDataCreatedEvent:
+#    tags:
+#      - name: event.listener
+#        identifier: 'AfterFileMetaDataCreatedEvent'
 
   Faeb\Videoprocessing\Command\Process:
     tags:
