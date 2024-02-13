@@ -22,7 +22,7 @@
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.7",
         "james-heinrich/getid3": "^1.9.16",
-        "typo3/cms-core": "^11.5.30",
+        "typo3/cms-core": "^11.5",
         "php-ffmpeg/php-ffmpeg": "^1.1",
         "fluidtypo3/vhs": "^7"
     },
