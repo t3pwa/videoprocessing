@@ -1,0 +1,22 @@
+plugin.tx_videoprocessing.view {
+	# cat=bootstrap package: templates/200/layoutRootPath; type=string; label=Layout Root Path: Path to layouts
+	#layoutRootPath = EXT:bootstrap_package/Resources/Private/Layouts/
+	layoutRootPath = EXT:videoprocessing/Resources/Private/Layouts/
+
+	# cat=bootstrap package: templates/200/partialRootPath; type=string; label=Partial Root Path: Path to partials
+	# this one works
+	partialRootPath = EXT:videoprocessing/Resources/Private/Partials/
+
+	# those dont work
+	#partialRootPath.0 = EXT:bootstrap_package/Resources/Private/Partials/
+	#partialRootPaths.1 = EXT:videoprocessing/Resources/Private/Partials/
+
+	# cat=bootstrap package: templates/200/templateRootPath; type=string; label=Template Root Path: Path to templates
+
+	templateRootPath = EXT:videoprocessing/Resources/Private/Templates/
+
+	#templateRootPaths.0 = EXT:bootstrap_package/Resources/Private/Templates/
+	#templateRootPaths.1 = EXT:videoprocessing/Resources/Private/Templates/
+}
+
+plugin.tx_bootstrappackage < plugin.tx_videoprocessing

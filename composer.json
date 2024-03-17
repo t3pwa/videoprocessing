@@ -1,0 +1,71 @@
+{
+    "name": "faeb/videoprocessing",
+    "type": "typo3-cms-extension",
+    "description": "",
+    "minimum-stability": "dev",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Marco Pfeiffer",
+            "email": "marco@hauptsache.net",
+            "homepage": "https://www.marco.zone",
+            "role": "Developer"
+        },
+        {
+            "name": "Alexander Reinhard",
+            "email": "alex@koeln.de",
+            "role": "Integrator"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.7",
+        "james-heinrich/getid3": "^1.9.16",
+        "typo3/cms-core": "^11.5.30",
+        "php-ffmpeg/php-ffmpeg": "^1.1",
+        "fluidtypo3/vhs": "@dev",
+        "fab/metadata": "@dev"
+    },
+    "suggest": {
+        "hauerheinrich/hh-video-extender": "0.2.1"
+    },
+    "require-dev": {
+        "typo3/testing-framework": "^6.9.0",
+        "typo3/cms-belog": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Faeb\\Videoprocessing\\": "Classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Faeb\\Videoprocessing\\Tests\\": "Tests"
+        }
+    },
+    "replace": {
+        "typo3-ter/videoprocessing": "self.version",
+        "hn/video": "self.version"
+    },
+    "config": {
+        "sort-packages": true,
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "TYPO3\\TestingFramework\\Composer\\ExtensionTestEnvironment::prepare"
+        ]
+    },
+    "extra": {
+        "typo3/cms": {
+            "web-dir": ".Build/public",
+            "extension-key": "videoprocessing"
+        }
+    }
+}

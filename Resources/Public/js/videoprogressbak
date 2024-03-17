@@ -1,0 +1,175 @@
+(function () {
+
+    /*
+    this.jsonId = jsonId;
+    console.log("this.jsonId, jsonId:", this.jsonId, jsonId);
+    console.log(">>>>>000 jsonId", jsonId, $jsonId, this.jsonId);
+    */
+
+    var list = document.getElementsByClassName('tx_videoprocessing_progress');
+    for (let element of list) {
+        console.log ("\n\r>>>>>>>>>>><< element.id", element.id);
+        // this.jsonId = element.id;
+        pollingInterval = 5000;
+
+        processCounterTotal = 0;
+        processCounter = [],
+        processCounter[0] = 0,
+        processCounter[1] = 0,
+        processCounter[2] = 0,
+
+
+        (function (element) {
+
+//            this.element = document.getElementById(this.jsonId),
+            this.element = element,
+            latestProgress = 0.0,
+            remaining = 0,
+            lastUpdate = 0,
+
+            updateProperties = function (o) {
+
+                processCounterTotal++;
+                console.log("processCounterTotal", processCounterTotal)
+
+
+
+                if (this.element.id == "tx_videoprocessing_progress_1") {
+                    processCounter[1] = processCounter[1] + 1;
+                    console.log("processCounter1", processCounter[1])
+                }
+
+                if (this.element.id == "tx_videoprocessing_progress_2") {
+                    processCounter[2] = processCounter[2] + 1;
+                    console.log("processCounter2", processCounter[2])
+                }
+
+
+                this.o = o
+                console.log("[updateProperties]", this.element.id, this.o);
+
+                uid = String(o.uid);
+                // console.log("!!! this.uid:", this.uid, element.id);
+                latestProgress = Number(o.progress);
+                // console.log("latestProgress", this.uid, this.latestProgress, jsonId);
+                remainingTime = Number(o.remaining) || Infinity;
+                // console.log("this.remaining time" , this.remainingTime, jsonId);
+                lastUpdate = Number(o.lastUpdate, this.jsonId);
+                //lastStatus = String(o.status, this.jsonId);
+
+                //processingDuration = String(o.processingDuration);
+                // console.log("processingDuration ", jsonId, this.uid, this.processingDuration);
+
+            },
+            this.lastContent = this.element.textContent,
+            this.updateTimeout = 0,
+            requestProperties = function (callback) {
+                console.log("[videoprogress.js] requestProperties() ", this.element.id)
+                clearTimeout(this.updateTimeout);
+                xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+
+                    this.response = xhr.responseText;
+                    // console.log("[videoprogress.js] this.response", element.id, response);
+                    updateProperties(JSON.parse(this.response));
+
+                    this.updateTimeout = setTimeout(
+                        requestProperties,
+                        pollingInterval
+                    );
+
+                    callback && callback();
+                };
+
+                console.log("[videoprogress.js] updateUrl", this.element.dataset.updateUrl);
+
+                this.xhr.open('GET', this.element.dataset.updateUrl, true);
+                this.xhr.send(null);
+            },
+            render = function () {
+                // this.uid = uid;
+                // check if the target node is still within the document and stop everything if not
+
+                /*
+                if (document.getElementById(element.id) !== element) {
+                    clearTimeout(updateTimeout);
+                    console.log("not in focus?")
+                    return;
+                }
+                */
+
+                // calculate the progress until it should be finished
+                // console.log("maxPredictedProgress "+uid+"", $maxPredictedProgress);
+
+                maxPredictedProgress = 2000;
+
+                progress = Math.min(1.0, Math.min(maxPredictedProgress, Date.now() - lastUpdate) / remainingTime),
+                    newContent = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1) + '%';
+
+                console.log("[videoprogress.js] render: uid " + uid + ": ", progress, element.id);
+
+                newContent = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1) + '%';
+                progressInt = ((latestProgress + (1.0 - latestProgress) * progress) * 100).toFixed(1);
+
+                console.log("[render]", this.element.id, uid, progress, progressInt, newContent);
+
+                //            this.element.style.width = newContent;
+                //            this.element.style.background = 'hsl('+progressInt+' 100% 50%)'
+
+                if (lastContent !== newContent) {
+                    element.dataset.progress = this.newContent;
+                    element.dataset.uid = this.uid;
+                    element.style.width = this.newContent
+                    element.textContent = this.newContent;
+                    element.style.background = 'hsl(' + progressInt + ' 100% 50%)'
+                    lastContent = newContent;
+                } else {
+                    console.log("no change")
+                }
+
+                if (this.progressInt < 0.01) {
+                    element.textContent = '[' + uid + ']: ' + newContent;
+                }
+
+                if (progress < 1.0) {
+                    milliseconds = remainingTime / (1.0 - latestProgress) / 1000;
+                    // console.log("this ms", this.milliseconds);
+                    // console.log("set timeout while still in progress", Math.max(2000, Math.min(1000, this.milliseconds)) )
+/*
+                    setTimeout(
+                        render()
+                        // Math.max(4000, Math.min(3000, this.milliseconds))
+                    // ).bind(Math.max(4000, Math.min(3000, milliseconds)));
+                    ).bind(1000);
+*/
+                } else {
+                    console.log(">>>>>>>>>>>>>>>>> finished?");
+                    clearTimeout(updateTimeout);
+
+                    if (document.hasFocus() && lastUpdate + 20000 > Date.now()) {
+                        console.log("setTimeout");
+                        setTimeout(function () {
+                            if (!window.video_is_reloading) {
+                                location.reload();
+                                window.video_is_reloading = true;
+                            }
+                        }, 5000);
+                        // }.bind(2500));
+                    }
+
+                }
+
+                console.log("end render")
+
+            } // render()
+        ;
+        requestProperties(render);
+       })(element);
+
+    console.log("element", element.id)
+    // renderProgress(element);
+
+    }
+    // console.log("ENDE");
+
+})();

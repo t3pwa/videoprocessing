@@ -1,0 +1,10 @@
+page = PAGE
+page {
+    includeCSS {
+        103410 = EXT:videoprocessing/Resources/Public/css/video.css
+    }
+	includeJSFooter {
+        103410 = EXT:videoprocessing/Resources/Public/js/videoprogress.js
+        103416 = EXT:videoprocessing/Resources/Public/js/autoplayonhover.js
+    }
+}

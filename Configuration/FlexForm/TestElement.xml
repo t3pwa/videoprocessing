@@ -1,0 +1,73 @@
+<T3DataStructure>
+    <meta>
+        <langDisable>1</langDisable>
+    </meta>
+    <sheets>
+        <main>
+            <ROOT>
+                <TCEforms>
+                    <sheetTitle>Plugin Settings</sheetTitle>
+                </TCEforms>
+                <type>array</type>
+                <el>
+                    <settings.options>
+                        <TCEforms>
+                            <label>Options</label>
+                            <config>
+                                <type>input</type>
+                                <eval>trim,required</eval>
+                                <valuePicker type="array">
+                                    <items type="array">
+                                        <numIndex index="1" type="array">
+                                            <numIndex index="0">mp4 vs webm</numIndex>
+                                            <numIndex index="1">{"format": "mp4", "start": 3, "duration": 13}</numIndex>
+                                        </numIndex>
+                                        <numIndex index="10" type="array">
+                                            <numIndex index="0">mp4 quality 80%</numIndex>
+                                            <numIndex index="1">{"format": "mp4", "start": 3, "duration": 14, "video": {"quality": 0.8}, "audio": {"quality": 0.8}}</numIndex>
+                                        </numIndex>
+                                        <numIndex index="11" type="array">
+                                            <numIndex index="0">mp4 quality 100% 80% 60%</numIndex>
+                                            <numIndex index="1">{"format": "mp4", "start": 3, "duration": 15, "video": {"quality": %1.0,0.8,0.6%}, "audio": {"quality": %1.0,0.8,0.6%}}</numIndex>
+                                        </numIndex>
+                                        <numIndex index="12" type="array">
+                                            <numIndex index="0">mp4 quality 100%, 80%, 60%, 40%, 20%, 0%</numIndex>
+                                            <numIndex index="1">{"format": "mp4", "start": 3, "duration": 16, "video": {"quality": %1.0,0.8,0.6,0.4,0.2,0.0%}, "audio": {"quality": %1.0,0.8,0.6,0.4,0.2,0.0%}}</numIndex>
+                                        </numIndex>
+                                        <numIndex index="20" type="array">
+                                            <numIndex index="0">webm quality 80%</numIndex>
+                                            <numIndex index="1">{"format": "webm", "start": 3, "duration": 17, "video": {"quality": 0.8}, "audio": {"quality": 0.8}}</numIndex>
+                                        </numIndex>
+                                        <numIndex index="21" type="array">
+                                            <numIndex index="0">webm quality 100% 80% 60%</numIndex>
+                                            <numIndex index="1">{"format": "webm", "start": 3, "duration": 18, "video": {"quality": %1.0,0.8,0.6%}, "audio": {"quality": %1.0,0.8,0.6%}}</numIndex>
+                                        </numIndex>
+                                        <numIndex index="22" type="array">
+                                            <numIndex index="0">webm quality 100%, 80%, 60%, 40%, 20%, 0%</numIndex>
+                                            <numIndex index="1">{"format": "webm", "start": 3, "duration": 19, "video": {"quality": %1.0,0.8,0.6,0.4,0.2,0.0%}, "audio": {"quality": %1.0,0.8,0.6,0.4,0.2,0.0%}}</numIndex>
+                                        </numIndex>
+                                        <numIndex index="30" type="array">
+                                            <numIndex index="0">bilinear vs bicublin vs bicubic vs lanczos vs area</numIndex>
+                                            <numIndex index="1">{"start": 3, "duration": 10, "video": {"scalingAlgorithm": "%bilinear,bicublin,bicubic,lanczos,area%"}}</numIndex>
+                                        </numIndex>
+
+                                        <numIndex index="40" type="array">
+                                            <numIndex index="0">frame jpg 1</numIndex>
+                                            <numIndex index="1">{"format": "jpg", "start": 3, "duration": 1 }</numIndex>
+                                        </numIndex>
+
+                                        <numIndex index="41" type="array">
+                                            <numIndex index="0">frame png 1</numIndex>
+                                            <numIndex index="1">{"format": "png", "start": 3, "duration": 1 }</numIndex>
+                                        </numIndex>
+
+                                    </items>
+                                </valuePicker>
+                            </config>
+                        </TCEforms>
+                    </settings.options>
+                </el>
+            </ROOT>
+        </main>
+    </sheets>
+</T3DataStructure>
