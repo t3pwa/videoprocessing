@@ -1,0 +1,6 @@
+/.Build
+.Build
+.Build/*
+/.Build/*
+/composer.lock
+.idea
