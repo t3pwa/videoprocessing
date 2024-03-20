@@ -61,7 +61,7 @@ class Process extends Command
 
         $i = 0;
         foreach ($storedTasks as $storedTask) {
-            $output->writeln("doProcessTask ".strval($i));
+            $output->writeln("doProcessTask ".strval($i)."/".$count);
 
             $this->videoProcessor->doProcessTask($storedTask, $i);
 
