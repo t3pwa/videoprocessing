@@ -157,13 +157,13 @@ class VideoProcessor implements ProcessorInterface
         }
 
         // try {
-            print("[try Videoprocessor]\n");
+            print("[try Videoprocessor] ".$i."\n");
             $converter = $this->getConverter();
 
             // print out the converter that is used
-            print("[converter initilized]\n");
+            print("[converter initilized] ".$i."\n");
             $converter->process($task);
-            print("[converter process after] handle Task if Done\n");
+            print("[converter process after] ".$i." handle Task if Done\n");
             $this->handleTaskIfDone($task);
 /*
         } catch (\Exception $e) {
@@ -206,9 +206,6 @@ class VideoProcessor implements ProcessorInterface
             $processedFileRepository = GeneralUtility::makeInstance(ProcessedFileRepository::class);
 
             var_dump("[VideoProcessor handleTaskIfDone()] targetFile Identifier", $task->getTargetFile()->getIdentifier());
-
-
-
             $processedFileRepository->add($task->getTargetFile());
 
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);

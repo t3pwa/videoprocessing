@@ -71,6 +71,13 @@ class TaskController extends ActionController
             $this->redirect('list');
         }
 
+        //var_dump(gettype($task), $task);
+        // ToDo why ist there a integer?
+        if (gettype($task) == "integer") {
+            $this->addFlashMessage("File of Task wasn't found, deleting task", AbstractMessage::ERROR);
+            $this->redirect('list');
+        }
+
         $processedFile = $task->getTargetFile();
         if (!$processedFile->usesOriginalFile() && $processedFile->delete()) {
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);

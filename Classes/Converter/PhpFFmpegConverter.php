@@ -19,6 +19,7 @@ use Faeb\Videoprocessing\Processing\VideoTaskRepository;
 // use Faeb\Videoprocessing\VideoMetadataExtractor;
 
 
+use MongoDB\BSON\Iterator;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -81,10 +82,20 @@ class PhpFFmpegConverter extends AbstractVideoConverter
         }
 
         $streams    = $localFileProbeInfo['streams'] ?? [];
+
         $codec      = $localFileProbeInfo['codec'] ?? "";
+
+
         $duration   = $localFileProbeInfo['duration'] ?? 3600.0;
 
-        $duration   = $duration - $task->getConfiguration()['start'] ?? 0;
+        if (array_key_exists('start', $task->getConfiguration())) {
+            $start = $task->getConfiguration()['start'];
+        } else {
+            $start = 0;
+        }
+
+        $duration   = $duration - $start ?? 0;
+
         $duration   = min($duration, $task->getConfiguration()['duration'] ?? INF);
 
         $SourceFileMetaData = $task->getSourceFile()->getMetaData();
@@ -272,7 +283,7 @@ class PhpFFmpegConverter extends AbstractVideoConverter
      * @param string $parameters
      * @param VideoProcessingTask $task
      *
-     * @return \Iterator|void
+     * @return \Iterator
      * @throws ConversionException
      */
     protected function ffmpeg(array $parameters, VideoProcessingTask $task): void
@@ -285,7 +296,9 @@ class PhpFFmpegConverter extends AbstractVideoConverter
         $ffmpeg = FFMpeg::create();
         $logger->debug(sprintf('[PhpFFmpegConverter] run php-ffmpeg with parameters %s', json_encode($parameters) ) );
         $video = $ffmpeg->open($parameters[0]);
-        $format = new \FFMpeg\Format\Video\X264();
+
+        var_dump($parameters[4]);
+        var_dump($parameters[2]['format']);
 
         // $process = $this->runner->run($commandStr);
         /*
@@ -299,16 +312,30 @@ class PhpFFmpegConverter extends AbstractVideoConverter
 //        var_dump("parameters in php-ffmpeg-converter format", $format);
 //        var_dump("parameters codec", $parameters[4]);
 
-        if ($parameters[4] == 'h264') { // codec
+        if ($parameters[2]["format"] == 'h264') { // codec
 //            $format = new \FFMpeg\Format\Video\X264();
+            $format = new \FFMpeg\Format\Video\X264(
+                audioCodec: 'aac', // 'libopus'
+                videoCodec: 'libx264'
+            );
+            /*
             $format
                 ->setKiloBitrate(1000)
                 ->setAudioChannels(2)
                 ->setAudioKiloBitrate(256)
-//                ->setInitialParameters(array('-acodec', 'libopus'))
             ;
-            // $format->setInitialParameters(array('-acodec', 'libopus'));
+            */
+
         }
+
+        if ($parameters[2]['format'] == 'webm') { // codec
+            $format = new \FFMpeg\Format\Video\WebM(
+                audioCodec: 'libvorbis',
+                videoCodec: 'libvpx'
+            );
+        }
+
+
 
         // var_dump($task->getConfiguration());
         // var_dump($task->getLastProgress());
@@ -316,6 +343,8 @@ class PhpFFmpegConverter extends AbstractVideoConverter
             echo "$percentage% transcoded\n";
             $task->addProgressStep((float)($percentage/100));
             // $videoTaskRepository->store($task);
+
+
         } );
         echo "after format on progress\n";
         // var_dump($task->getConfiguration());
@@ -325,19 +354,7 @@ class PhpFFmpegConverter extends AbstractVideoConverter
 
         // $output = '[output]';
         // This is a command runner, not to be used with php-ffmpeg-objects!
-//        $process = $this->runner->run(
-//            $angle = 45;
-//            $watermarkPath = '';
-/*
-            $video->filters()
-                ->rotate($angle)
-                ->watermark($watermarkPath, array(
-                    'position' => 'absolute',
-                    'x' => 50,
-                    'y' => 50,
-                ))
-            ;
-*/
+//
 //            var_dump("parameters in php-ffmpeg-converter 1a (target): ". $parameters[0]);
 //            var_dump("parameters in php-ffmpeg-converter 1b (target): ". $parameters[1]);
 //            var_dump("parameters in php-ffmpeg-converter 1c (target): ". $parameters[2]['format']);
@@ -383,6 +400,6 @@ class PhpFFmpegConverter extends AbstractVideoConverter
             // $task->set $output
         }
         */
-        return;
+
     }
 }

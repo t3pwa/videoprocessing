@@ -49,37 +49,32 @@ class TestContentElement
         // TODO replace id with content element type + id
         $content .= '<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">';
 
-        $content .= count($configurations). ' - ';
-        $content .=  count ( $fileCollector->getFiles() );
+//        $content .= count($configurations). ' - ';
+//        $content .=  count ( $fileCollector->getFiles() );
 
         // if (count ( $fileCollector->getFiles() ) > 1) {
         // carousel item for each configuration
         if (count ( $configurations ) > 1) {
-            $content .= '<div 
-                class="carousel-indicators"
-                style="
+            $content .= '<div class="carousel-indicators" style="
                     position: absolute;
                     top: 50%;
-                    // margin-top: 1em;
                     padding-top: 0.5em;
-                    // border: 1px dotted greenyellow;
                     float: none;
                     height: 3em;
-                    
                 "
             >';
             //for ($x = 0; $x < count ( $fileCollector->getFiles() ); $x++) {
-            for ($x = 0; $x < count (   $configurations ); $x++) {
+            for ($x = 0; $x < count ( $configurations ); $x++) {
                 $content .= '<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="'.$x.'"';
                 if ($x == 0) {
                     $content .= ' class="active" ';
                 }
-                $content .= 'aria-current="true" aria-label="Slide '.$x.'"></button>';
+                $content .= ' aria-current="true" aria-label="Slide '.$x.'"></button>';
             };
             $content .= '</div>';
         }
 
-        $content .= "<div class='carousel-inner'  xmlns='http://www.w3.org/1999/html'>";
+        $content .= "<div class='carousel-inner' xmlns='http://www.w3.org/1999/html'>";
 
         // key, value instead of iterator?
         $iterator = 0;
@@ -97,7 +92,7 @@ class TestContentElement
                 $task = GeneralUtility::makeInstance(VideoTaskRepository::class)->findByFile($file->getUid(), $configuration);
                 $json = json_encode($configuration, JSON_UNESCAPED_SLASHES);
 
-                $content .= '<div class="carousel-item';
+                $content .= '<div data-iterator="'.$iterator.'" class="carousel-item';
                     if ($iterator == 0) {
                         $content .= ' active';
                     }
@@ -114,8 +109,6 @@ class TestContentElement
                     }
                     */
 
-
-
                     $size = GeneralUtility::formatSize($processedFile->getSize());
                     $duration = GeneralUtility::formatSize($processedFile->getProperty('duration'));
 
@@ -125,17 +118,15 @@ class TestContentElement
 
                     $content .= '<div class="carousel-content embed-responsive embed-responsive-16by9"">';
 
-                    $content .= '<figure class="embed-responsive-item" >';
-                    $content .= $renderer->render($processedFile, 0, 0, $configuration);
-                    $content .= '</figure>\n';
+                    $content .= '    <figure class="embed-responsive-item" >';
+                    $content .= '       '.$renderer->render($processedFile, 0, 0, $configuration);
+                    $content .= '    </figure>\n';
 
-                    $content .= '
-                    <div class="carousel-caption d-none d-md-block w-90"
-                        style="background: -webkit-gradient(linear, left top, left bottom, color-stop(15%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1)));"
+                    $content .= '    <div class="carousel-caption d-none d-sm-block w-90"
+                        style="background: -webkit-gradient(linear, left top, left bottom, color-stop(15%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1))) ";
                     >';
 
-                    // $content .= '<h5 class="fa-ice-cream">'. $iterator .' </h5>';
-                    $content .= '<h2 
+                    $content .= '<h2
                         class="card-header headline-slidertext align-content-start"
                         style="
                             text-align: left;
@@ -147,26 +138,25 @@ class TestContentElement
                         >
                         <i class="fa-ice-cream"></i> 
                             '. $iterator .' [...'.$duration.'] <small>(' . $size . ')</small>
-                       </h2>
-                       ';
-                    $content .= '
-                    <hr />
-                    ';
+                       </h2>';
                     $content .= '<code>' . htmlspecialchars($json) . '</code>';
-
                     if ($task instanceof VideoProcessingTask) {
-                        $content .= '
-                        <span>
-                            <strong>status:</strong>' . $task->getStatus() . '
-                            <strong>ext:</strong>'. $task->getTargetFileExtension() .'
+                        $content .= '<span>
+                            <strong>status: </strong>' . $task->getStatus() . '\n
+                            <strong> ext:</strong>'. $task->getTargetFileExtension() .'
                         </span>
                         ';
                         $duration = intval($task->getProcessingDuration()) . ' s';
                         $content .= "
-                            <strong>processing duration:</strong> 
+                            <strong> processing duration:</strong> 
                             <span class='alert-info'>$duration</span>
                         ";
                     }
+
+                    $content .= '</div> <!-- carousel caption end -->';
+
+                    $content .= '</div> <!-- carousel content end -->';
+
                 } else {
                     $content .= '
                     <div 
@@ -174,21 +164,16 @@ class TestContentElement
                         style="margin-bottom: -2em;"
                     >';
                     $content .= '<span>file is still processing</span>';
-                    // $content .= ProgressViewHelper::renderHtml($processedFile);
-                    // $content .= "</figure> <!-- figure end -->
                     $content .= '</div>';
                 };
-
-                $content .= '
-                </div> <!-- caption /end -->
-                </div>';
-
+                $content .= '</div> <!-- carousel item end -->';
                 $iterator = $iterator + 1;
-
             }
         }
+
         $content .= '</div> <!-- carousel inner end -->';
 
+        /*
         if (count ( $fileCollector->getFiles() ) > 1) {
             $content .= '
             <!-- Controls -->
@@ -206,6 +191,8 @@ class TestContentElement
               </div>
             ';
         }
+        */
+
         $content .= "</div> <!-- carousel in special video test media --> ";
         return $content;
     }

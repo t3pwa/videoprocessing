@@ -206,7 +206,7 @@ class VideoTagRenderer implements FileRendererInterface
                     data-autoplay= "' . $file->getProperty('autoplay') . '"
                 %s >%s</video>',
                 implode(' ', $attributes),
-                implode('', $sources),
+//                implode('', $sources),
 //                implode('', $options)
             );
             $tag .= $progress;
@@ -216,14 +216,14 @@ class VideoTagRenderer implements FileRendererInterface
 //            $attributes['preview_image'] = $this->getPosterImageFromSources($sources);
 
             $tag = sprintf('<!-- not-processed, yet, not showing prgess, please reload -->' );
-            $tag = sprintf('<video 
+            $tag.= sprintf('<figure><video 
                 
                 onmouseover="this.play(); this.setAttribute(\'controls\',\'controls\');"
                 onmouseout="this.pause(); this.removeAttribute(\'controls\');"  
                 data-status="has-no-processed-sources-yet"
                 loop="loop"
                 data-autoplay= "' . $file->getProperty('autoplay') . '"
-                >%s</video>',
+                %s >%s</video></figure>',
                 implode(' ', $attributes),
                 implode('', $sources)
             );
