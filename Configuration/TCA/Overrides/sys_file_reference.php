@@ -166,13 +166,4 @@ $customColumns = [
     ],
 ];
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(
-    'sys_file_reference',
-    $customColumns
-);
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette(
-    'sys_file_reference',
-    'videoOverlayPalette',
-    'loop, muted, preload, defer, relatedVideos, controls, --linebreak--, preview_image, --linebreak--, click_preview_image_to_show_video'
-);

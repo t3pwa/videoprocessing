@@ -20,7 +20,7 @@
                                     <items type="array">
                                         <numIndex index="1" type="array">
                                             <numIndex index="0">mp4 vs webm</numIndex>
-                                            <numIndex index="1">{"format": "mp4", "start": 3, "duration": 13}</numIndex>
+                                            <numIndex index="1">{"format": "%mp4,webm%", "start": 60, "duration": 60}</numIndex>
                                         </numIndex>
                                         <numIndex index="10" type="array">
                                             <numIndex index="0">mp4 quality 80%</numIndex>

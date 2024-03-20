@@ -32,21 +32,20 @@ services:
         identifier: 'BeforeFileProcessingEvent'
         #before: 'BeforeFileProcessingEvent'
 
+  Faeb\Videoprocessing\EventListener\EnrichFileMetaDataEvent:
+    tags:
+      - name: event.listener
+        identifier: 'EnrichFileMetaDataEvent'
 
-#  Faeb\Videoprocessing\EventListener\EnrichFileMetaDataEvent:
-#    tags:
-#      - name: event.listener
-#        identifier: 'EnrichFileMetaDataEvent'
+  Faeb\Videoprocessing\EventListener\AfterFileMetaDataUpdatedEvent:
+    tags:
+      - name: event.listener
+        identifier: 'AfterFileMetaDataUpdatedEvent'
 
-#  Faeb\Videoprocessing\EventListener\AfterFileMetaDataUpdatedEvent:
-#    tags:
-#      - name: event.listener
-#        identifier: 'AfterFileMetaDataUpdatedEvent'
-
-#  Faeb\Videoprocessing\EventListener\AfterFileMetaDataCreatedEvent:
-#    tags:
-#      - name: event.listener
-#        identifier: 'AfterFileMetaDataCreatedEvent'
+  Faeb\Videoprocessing\EventListener\AfterFileMetaDataCreatedEvent:
+    tags:
+      - name: event.listener
+        identifier: 'AfterFileMetaDataCreatedEvent'
 
   Faeb\Videoprocessing\Command\Process:
     tags:

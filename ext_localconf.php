@@ -135,9 +135,10 @@ call_user_func(function () {
     }
 
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['videoprocessing']['video_converters'] = [
-        'LocalFFmpeg' => [Converter\LocalFFmpegConverter::class]
+        'LocalFFmpeg' => [Converter\LocalFFmpegConverter::class],
         // [depricated]
         // 'CloudConvert' => [Converter\CloudConvertConverter::class, $conf['cloudConvertApiKey'] ?? '']
+        'php-ffmpeg' => [Converter\PhpFFmpegConverter::class]
     ];
 
 //    if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['videoprocessing']['video_converter'])) {

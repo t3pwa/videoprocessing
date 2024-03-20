@@ -1,10 +1,11 @@
-# cat=platform; type=options[LocalFFmpeg,CloudConvert]; label=Converter:Define how videos should be converted. LocalFFmpeg requires you to have ffmpeg installed on your webserver. CloudConvert requires an api key and isn't free if you convert a lot of videos but will keep the load off of your webserver.
-converter = LocalFFmpeg
+# cat=platform; type=options[LocalFFmpeg,php-ffmpeg,CloudConvert]; label=Converter:Define how videos should be converted. LocalFFmpeg requires you to have ffmpeg installed on your webserver. CloudConvert requires an api key and isn't free if you convert a lot of videos but will keep the load off of your webserver.
+#converter = LocalFFmpeg
+converter = php-ffmpeg
 
-# cat=platform; type=string; label=CloudConvert (depricated) Api-Key:If you want to use CloudConvert than you'll need to define this.
-cloudConvertApiKey =
+## cat=platform; type=string; label=CloudConvert (depricated) Api-Key:If you want to use CloudConvert than you'll need to define this.
+#cloudConvertApiKey =
 
-# cat=platform; type=boolean; label=FDK AAC available:Enable this if your local ffmpeg instance can encode using libfdk_aac. This encoder creates noticeably better audio quality especially at lower bitrates. This options is ignored if CloudConvert is used since they have fdk available and not using it would be a waste.
+# cat=platform; type=boolean; label=FDK AAC available (untested with php-ffmpeg):Enable this if your local ffmpeg instance can encode using libfdk_aac. This encoder creates noticeably better audio quality especially at lower bitrates. This options is ignored if CloudConvert is used since they have fdk available and not using it would be a waste.
 fdkAvailable = 0
 
 # cat=platform; type=boolean; label=Enable test element:This will add a content element to your instance with which you can easily test different video settings
@@ -23,4 +24,8 @@ videoQuality = 0.8
 audioQuality = 0.8
 
 # cat=default settings; type=options[never=0,only in dev mode=1,only if BE user logged in=2,always=3]; label=Show progress:Show processing progress under videotag
+<<<<<<< HEAD
 showProgress = 0
+=======
+showProgress = 1
+>>>>>>> feature/phpffmpeg

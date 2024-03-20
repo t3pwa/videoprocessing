@@ -74,6 +74,11 @@ class VideoProcessor implements ProcessorInterface
             return;
         }
 
+        if ($task->getSourceFile()->isMissing()) {
+            return;
+        }
+
+
         $taskRepository = GeneralUtility::makeInstance(VideoTaskRepository::class);
         $storedTask = $taskRepository->findByTask($task);
 
@@ -134,7 +139,7 @@ class VideoProcessor implements ProcessorInterface
      *
      * @param TaskInterface $task
      */
-    public function doProcessTask(TaskInterface $task)
+    public function doProcessTask(TaskInterface $task, $i)
     {
 
         if (!$task instanceof VideoProcessingTask) {
@@ -146,17 +151,21 @@ class VideoProcessor implements ProcessorInterface
             throw new \RuntimeException("This task is not new.");
         }
 
-        try {
-            // print(" [try Videoprocessor] ");
-            $converter = $this->getConverter();
-            // print(" [converter initilized] ");
-            $converter->process($task);
-            // print(" [converter process after] handle Task if Done");
-            $this->handleTaskIfDone($task);
 
+        // try {
+            print("[try Videoprocessor] ".$i."\n");
+            $converter = $this->getConverter();
+
+            // print out the converter that is used
+            print("[converter initilized] ".$i."\n");
+            $converter->process($task);
+            print("[converter process after] ".$i." handle Task if Done\n");
+            $this->handleTaskIfDone($task);
+/*
         } catch (\Exception $e) {
-            print(" [catch try videoprocessor] status failed ");
-            $task->setStatus(VideoProcessingTask::STATUS_FAILED);
+            print(" [catch try in videoprocessor] status failed ");
+            // $task->setStatus(VideoProcessingTask::STATUS_FAILED);
+            $task->setStatus(VideoProcessingTask::STATUS_NEW);
 
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->critical($e->getMessage());
@@ -167,8 +176,7 @@ class VideoProcessor implements ProcessorInterface
             //    throw new \RuntimeException('doProcessTask failed', 0, $e); // let them know
             // }
         }
-
-
+*/
         GeneralUtility::makeInstance(VideoTaskRepository::class)->store($task);
     }
 
@@ -191,6 +199,8 @@ class VideoProcessor implements ProcessorInterface
     {
         if ($task->isExecuted() && $task->isSuccessful() && $task->getTargetFile()->isProcessed()) {
             $processedFileRepository = GeneralUtility::makeInstance(ProcessedFileRepository::class);
+
+            var_dump("[VideoProcessor handleTaskIfDone()] targetFile Identifier", $task->getTargetFile()->getIdentifier());
             $processedFileRepository->add($task->getTargetFile());
 
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);

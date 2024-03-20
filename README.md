@@ -41,15 +41,28 @@ TYPO3 already handles image compression (at least sometimes). So wouldn't it be 
   
 - Either make sure that ffmpeg is available
   [depricated or configure a [CloudConvert] api key in the extension settings.]
-  (php-ffmpeg may be used for poster image generation, dev)
 
+## composer req ffmpeg
+
+##php-ffmpeg
+If you want to use the phpffmpeg converter
 
   
 - Make sure that the `video:process` command is run regularly.
+<<<<<<< HEAD
   This command will run the conversion if you use local `ffmpeg`.
   (If you use CloudConvert, this command is technically not required since everything can be handled though callbacks
   but it will increase the accuracy of the progress information and act as a fallback if the callbacks
   don't come though for whatever reason.)
+=======
+  
+- This command will run the conversion ( if you use local `ffmpeg` or php-gffmpeg )
+ 
+  (If you use CloudConvert, this command is technically not required since everything can be handled though callbacks
+  but it will increase the accuracy of the progress information and act as a fallback if the callbacks
+  don't come though for whatever reason.)
+ 
+>>>>>>> feature/phpffmpeg
 - Ensure that the php configurations `upload_max_filesize` and `post_max_size` are set properly.
   1GB are recommended. 
 - (If you use CloudConvert for free then that is also the max size they allow you.)
@@ -58,14 +71,28 @@ TYPO3 already handles image compression (at least sometimes). So wouldn't it be 
 
 There are some basic configuration options within the ext_conf which you can set though the TYPO3 backend globally.
 
+<<<<<<< HEAD
 - how to use ffmpeg (CloudConvert or ffmpeg command)
 - choose between performance presets like h264 slow, veryslow and if you want to also encode vp9
 - change the codec level to change resolution, filesize and compatibility
 - decide on video/audio compression using an easy percentage value that's similar to the jpeg quality percentage
+=======
+- how to use ffmpeg (CloudConvert or ffmpeg command, or php-ffmpeg)
+- choose between performance presets like h264 slow, veryslow and if you want to also encode vp9 (not implemented with php-ffmpeg, yet)
+- change the codec level to change resolution, filesize and compatibility (only local ffmpeg)
+- decide on video/audio compression using an easy percentage value that's similar to the jpeg quality percentage (only local ffmpeg)
+
+>>>>>>> feature/phpffmpeg
 
 These options are read using TYPO3 9's `ExtensionConfiguration` class so if you use TYPO3 9,
 you can also define these options programmatically in you `AdditionalConfiguration.php` like in this example:
 
+<<<<<<< HEAD
+=======
+
+<!--
+obsolete!
+>>>>>>> feature/phpffmpeg
 ```php
 <?php
 if (getenv('CLOUDCONVERT_APIKEY')) {
@@ -73,6 +100,10 @@ if (getenv('CLOUDCONVERT_APIKEY')) {
     $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['video']['cloudConvertApiKey'] = getenv('CLOUDCONVERT_APIKEY');
 }
 ```
+<<<<<<< HEAD
+=======
+-->
+>>>>>>> feature/phpffmpeg
 
 ## Usage
 
@@ -94,7 +125,11 @@ This is an example of an autoplaying video as you might use it in a stage or a c
     audio: {disabled: 1}
 }" />
 ```
+<<<<<<< HEAD
 <!-- ToDo: additional Paramters? not valid, additionalAttributes or AdditionalConfig -->
+=======
+<!-- ToDo: additional Parameters? not valid, additionalAttributes or AdditionalConfig -->
+>>>>>>> feature/phpffmpeg
 
 
 ### options
@@ -167,6 +202,12 @@ There are 3 levels:
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['video']['formats']['mp4'] = [
     'fileExtension' => 'mp4',
     'mimeType' => 'video/mp4',
+<<<<<<< HEAD
+=======
+    
+    <!-- todo namespace -->
+    
+>>>>>>> feature/phpffmpeg
     'video' => [\Hn\Video\Preset\H264Preset::class],
     'audio' => [\Hn\Video\Preset\AacPreset::class],
     'additionalParameters' => ['-movflags', '+faststart', '-map_metadata', '-1', '-f', 'mp4'],
@@ -257,8 +298,16 @@ You can define them within the format definition itself:
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['video']['formats']['mp4'] = [
     'fileExtension' => 'mp4',
     'mimeType' => 'video/mp4',
+<<<<<<< HEAD
     'video' => [\Hn\Video\Preset\H264Preset::class, ['quality' => 0.6]],
     'audio' => [\Hn\Video\Preset\AacPreset::class, ['quality' => 1.0]],
+=======
+    
+    //  @ToDo Namespace
+    'video' => [\Hn\Video\Preset\H264Preset::class, ['quality' => 0.6]],
+    'audio' => [\Hn\Video\Preset\AacPreset::class, ['quality' => 1.0]],
+    
+>>>>>>> feature/phpffmpeg
     'additionalParameters' => ['-movflags', '+faststart', '-map_metadata', '-1', '-f', 'mp4'],
 ];
 ```
@@ -305,6 +354,7 @@ Here is a list of available commands:
 - `composer test:functional` will just run the functional tests.
 - `composer cc` will remove some temp files. If your functional test fail for no apparat reason try this.
 
+<<<<<<< HEAD
 ## Missing features
 
 - automatic poster generation, probably even multiple posters with the capability to select one
@@ -312,6 +362,23 @@ Here is a list of available commands:
 - multiple resolutions (adaptive streaming) with something like [HLS] or [MPEG-DASH]
   although i'm not sure about either [HLS royalties] nor [DASH royalties].
 - optionally process files within the fileadmin to reduce project footprint
+=======
+
+// ***************************************
+// the php-ffmpeg way, works with t3v11, php82, php-ffmpeg:1.1
+// https://stackoverflow.com/questions/2043007/generate-preview-image-from-video-file
+// https://github.com/PHP-FFMpeg/PHP-FFMpeg
+
+
+## Missing features
+
+- automatic poster generation, probably even multiple posters with the capability to select one, ani-gif as preview
+- an interface to crop and cut videos (it's already possible, just not though the interface)
+- multiple resolutions (adaptive streaming) with something like [HLS] or [MPEG-DASH]
+  although i'm not sure about either [HLS royalties] nor [DASH royalties].
+- optionally process files within the fileadmin to reduce project footprint
+- iundd/a11y-me-videoprod, lochmueller/html5videoplayerprod compatibilität
+>>>>>>> feature/phpffmpeg
 
 [CloudConvert]: https://cloudconvert.com
 [h264 level]: https://de.wikipedia.org/wiki/H.264#Level

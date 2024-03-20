@@ -13,6 +13,10 @@
         <!-- The local ffmpeg implementation will never state that there is an error, -->
         <!-- ToDo use php-ffmpeg? -->
         - remove the task, if it doesn't start.
+<<<<<<< HEAD
+=======
+        - deleting a task, deletes a processed files, for example mp4 was successful, wepm failed. mp4 will not be shown here, because it was already proccessed, @ToDo
+>>>>>>> feature/phpffmpeg
         <br>
         <!--
         [depricated]
@@ -40,18 +44,24 @@
                 <f:for each="{tasks}" as="task">
                     <tr class="{f:if(condition: '{task.status} == \'failed\'', then: 'danger')}">
                         <td>
+                            <f:variable name="now" value="{f:format.date(date: 'now',format:'%s')}" />
+                            <f:variable name="crdate" value="{f:format.date(date:'{task.crdate}',format:'%s')}" />
+
                             {task.crdate -> f:format.date(format: 'l d. M Y')}
                             {task.crdate -> f:format.date(format: 'H:i:s')}
+
+                            <!-- https://t3planet.com/typo3-tutorials/typo3-fluid-date-format-times-ago/ -->
+                            <small>
+                                <f:variable name="diff" value="{now - crdate}" />
+                                <br />
+                                <f:format.number decimals="0">{diff / 60}</f:format.number> minute ago
+                            </small>
                         </td>
 
                         <td style="text-align: right">
                             {task.status}<br />
-
-
                             <f:if condition="{task.status} == 'new'">
-
                                 <video:progress subject="{task.uid}" />
-
                             </f:if>
 
                             <f:if condition="{task.status} == 'failed'">
@@ -62,7 +72,7 @@
                         <td>
 
                             <f:comment>
-                            <f:debug>{task}</f:debug>
+                                <f:debug>{task}</f:debug>
                             </f:comment>
 
                             [{task.uid}]
@@ -100,7 +110,14 @@
                                 <f:variable name="isNew" value="{f:if(condition: '{task.status} == \'new\' && {task.lastUpdate} == 0', then: 1)}"/>
                                 <f:variable name="isFailed" value="{f:if(condition: '{task.status} == \'failed\'', then: 1)}"/>
                                 <f:variable name="isFinished" value="{f:if(condition: '{task.status} == \'finished\'', then: 1)}"/>
-                                <f:if condition="{isNew} || {isFailed} || {isFinished}">
+                                <f:variable name="isStuck" value="{f:if(condition: '{task.status} == \'stuck\'', then: 1)}"/>
+
+
+                                <f:variable name="isStuck" value="{f:if(condition: '({diff -> f:format.number(decimals: 0)}/60) >= 100 ', then: 1)}"/>
+
+                                {isStuck}
+
+                                <f:if condition="{isNew} || {isFailed} || {isFinished} || {isStuck}">
                                     <f:form action="delete" class="btn-group">
                                         <f:form.hidden name="task" value="{task.uid}" />
                                         <button class="btn btn-default" title="Delete">

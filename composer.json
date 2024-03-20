@@ -2,7 +2,7 @@
     "name": "faeb/videoprocessing",
     "type": "typo3-cms-extension",
     "description": "",
-    "authors": [],
+    "minimum-stability": "dev",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
@@ -13,24 +13,26 @@
         },
         {
             "name": "Alexander Reinhard",
-            "email": "alex@fabbing.com",
-            "role": "Developer"
+            "email": "alex@koeln.de",
+            "role": "Integrator"
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.1",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.7",
         "james-heinrich/getid3": "^1.9.16",
-        "typo3/cms-core": "^11.5",
+        "typo3/cms-core": "^11.5.30",
         "php-ffmpeg/php-ffmpeg": "^1.1",
-        "fluidtypo3/vhs": "^7"
+        "fluidtypo3/vhs": "@dev",
+        "fab/metadata": "@dev"
     },
     "suggest": {
         "hauerheinrich/hh-video-extender": "0.2.1"
     },
     "require-dev": {
-        "typo3/testing-framework": "^6.9.0"
+        "typo3/testing-framework": "^6.9.0",
+        "typo3/cms-belog": "^11.5"
     },
     "autoload": {
         "psr-4": {
@@ -43,7 +45,8 @@
         }
     },
     "replace": {
-        "typo3-ter/videoprocessing": "self.version"
+        "typo3-ter/videoprocessing": "self.version",
+        "hn/video": "self.version"
     },
     "config": {
         "sort-packages": true,

@@ -78,33 +78,34 @@ class VideoTagRenderer implements FileRendererInterface
             preg_replace("m", "", $height);
             $height = min($height, $width * $file->getProperty('height') / $file->getProperty('width'));
         }
-/*
+        /*
+                $attributes['width'] = 'width="100%"';
+                $attributes['height'] = 'height="auto"';
+        */
+
+
         $attributes['width'] = 'width="' . round($width) . '"';
         $attributes['height'] = 'height="' . round($height) . '"';
-*/
-        $attributes['width'] = 'width="100%"';
-        $attributes['height'] = 'height="auto"';
 
 
         // TODO ... only
         // var_dump ( "file prop autoplay", $file->getProperty('autoplay') );
 
-        $autoplay = intval($options['autoplay'] ?? $file->getProperty('autoplay'));
-        // what does this even do?
-        self::dispatch('autoplay', [&$autoplay], func_get_args());
-        // var_dump("autoplay", $autoplay);
 
         // Options only available per default in TCA flexform settings.options in test content element
-        // if ($autoplay > 0) {
 
-/*
-        if ($file->getProperty('preview_image')) {
-            $attributes['poster'] = 'poster';
-        }
-*/
+        $autoplay = intval($options['autoplay'] ?? $file->getProperty('autoplay'));
+        self::dispatch('autoplay', [&$autoplay], func_get_args());
 
-        var_dump($file->hasProperty('autoplay'));
-        var_dump($file->getProperty('autoplay'));
+//        if ($autoplay > 0) {
+            /*
+                if ($file->getProperty('preview_image')) {
+                    $attributes['poster'] = 'poster';
+                }
+            */
+
+//        var_dump($file->hasProperty('autoplay'));
+//        var_dump($file->getProperty('autoplay'));
 
         if ($file->getProperty('autoplay') > 0) {
             $attributes['autoplay'] = 'autoplay';
@@ -115,39 +116,53 @@ class VideoTagRenderer implements FileRendererInterface
             $attributes['muted'] = 'muted';
         }
 
-        // ToDo if ext ... is installed
+        // ToDo if ext hh video extended is installed or if is passed from test element?!
+
+        /*
         if ($file->hasProperty('muted') && $file->getProperty('muted') > 0) {
             $attributes['muted'] = 'muted';
         }
-
-
-
+        */
         // if ($options['controls'] ?? $autoplay < 3) {
+        /*
         if ($file->hasProperty('autoplay') && $file->getProperty('autoplay') < 3) {
             // ToDo: is it options or attributes?
             $attributes['controls'] = 'controls';
         }
 
+        */
+
         // if ($options['loop'] ?? $autoplay > 1) {
+        /*
         if ($file->hasProperty('autoplay') && $file->getProperty('autoplay') > 1) {
             $attributes['loop'] = 'loop';
         }
-        if ($file->hasProperty('loop') && $file->getProperty('loop') > 0) {
+        */
+        // if ($file->hasProperty('loop') && $file->getProperty('loop') > 0) {
+        /*
+        if ($file->getProperty('autoplay') > 0) {
             $options['loop'] = 'loop';
+            $attributes['loop'] = 'loop';
         }
+        */
 
 
 //        if ($options['playsinline'] ?? $autoplay >= 1) {
+        /*
         if ($file->hasProperty('autoplay') && $file->getProperty('autoplay') >= 1) {
             $attributes['playsinline'] = 'playsinline';
         }
+        */
 
+/*
 
         foreach ($this->getAttributes() as $key) {
             if (!empty($options[$key])) {
                 $attributes[$key] = $key . '="' . htmlspecialchars($options[$key]) . '"';
             }
         }
+*/
+
         // var_dump("attributes", $attributes);
 
         [$sources, $videos] = $this->buildSources(
@@ -187,15 +202,15 @@ class VideoTagRenderer implements FileRendererInterface
             // var_dump("$options progress", $options['progress'] );
 
             $tag = sprintf('<!-- not-processed, yet -->' );
-            $tag .= sprintf('<video onmouseover="this.play()"
-                onmouseout="this.pause();this.currentTime=0;" 
-                data-status="not-processed" 
-
-                data-autoplay= "' . $file->getProperty('autoplay') . '"
-
+            $tag .= sprintf('
+                <video 
+                    onmouseover="this.play()"
+                    onmouseout="this.pause();this.currentTime=0;" 
+                    data-status="not-processed" 
+                    data-autoplay= "' . $file->getProperty('autoplay') . '"
                 %s >%s</video>',
                 implode(' ', $attributes),
-                implode('', $sources),
+//                implode('', $sources),
 //                implode('', $options)
             );
             $tag .= $progress;
@@ -204,17 +219,15 @@ class VideoTagRenderer implements FileRendererInterface
 
 //            $attributes['preview_image'] = $this->getPosterImageFromSources($sources);
 
-            $tag = sprintf('<video 
+            $tag = sprintf('<!-- not-processed, yet, not showing prgess, please reload -->' );
+            $tag.= sprintf('<figure><video 
                 
-                onmouseover="this.play();this.setAttribute(\'controls\',\'controls\');"
-                // onmouseout="this.pause();"  
-                
-                %s 
-                data-status="has-processed-sources"
-                
+                onmouseover="this.play(); this.setAttribute(\'controls\',\'controls\');"
+                onmouseout="this.pause(); this.removeAttribute(\'controls\');"  
+                data-status="has-no-processed-sources-yet"
+                loop="loop"
                 data-autoplay= "' . $file->getProperty('autoplay') . '"
-                
-                >%s</video>',
+                %s >%s</video></figure>',
                 implode(' ', $attributes),
                 implode('', $sources)
             );
@@ -234,19 +247,24 @@ class VideoTagRenderer implements FileRendererInterface
         // orginial file, not processed
         // var_dump( "first source B", $file->getPublicUrl($usedPathsRelativeToCurrentScript) ) ;
         // TODO $poster = $file->getPublicUrl($usedPathsRelativeToCurrentScript);
-        $poster = $match[1][0];
-        // var_dump("poster: >>>>", $poster);
-        $posterImageFilePath = $poster;
-        // $attributes['preview_image'] = 'poster="' . $posterImageFilePath . '"';
-        if ( str_contains($poster,".png") ) {
 
+        if ($match[1]) {
+
+            $poster = $match[1][0];
+            // var_dump("poster: >>>>", $poster);
+            $posterImageFilePath = $poster;
+            // $attributes['preview_image'] = 'poster="' . $posterImageFilePath . '"';
+            if ( str_contains($poster,".png") ) {
 //            var_dump("sources in getPosterImage, match:", $poster);
-
-            $posterImageFilePath = substr($posterImageFilePath, 0, strpos($posterImageFilePath, "#"));
+                $posterImageFilePath = substr($posterImageFilePath, 0, strpos($posterImageFilePath, "#"));
 //            var_dump("$posterImageFilePath without hash:", $posterImageFilePath);
+                return 'poster="' . $posterImageFilePath . '"';
+            }
 
-            return 'poster="' . $posterImageFilePath . '"';
+        } else {
+            return false;
         }
+
 
     }
 
@@ -353,11 +371,15 @@ class VideoTagRenderer implements FileRendererInterface
 
             // ToDo replace $GLOBALS['TSFE'] vgl videoprocessor
 
+            /*
+
             $this->cacheManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager');
             // $this->cacheManager->flushCachesInGroupByTag('pages', 'RecordName_' . $item->getUid());
 
             $this->cacheManager->getCache('cache_pages')->flushByTag('RecordName_' . $video->getUid());
             $this->cacheManager->getCache('cache_pagesection')->flushByTag('RecordName_' . $video->getUid());
+            */
+
 
             // $this->cacheManager->flushCachesInGroupByTag('pages', 'RecordName_' . $task->getConfigurationChecksum() );
             // $this->cacheManager->getCache('cache_pages')->flushByTag('RecordName_' . $task->getConfigurationChecksum() );

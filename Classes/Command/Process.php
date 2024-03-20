@@ -41,15 +41,11 @@ class Process extends Command
     protected function execute(InputInterface $input, OutputInterface $output, float $timeout = INF): int
     {
         $output->writeln("Video Process Command execute ...");
-
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         $logger->notice('Video Process Command');
 
-
         /** @var TYPE_NAME $storedTasks */
-
         $storedTasks = $this->VideoTaskRepository->findByStatus(VideoProcessingTask::STATUS_NEW);
-        //$this->output("Search for new tasks... ");
 
         $count = count($storedTasks);
         if ($count <= 0) {
@@ -61,12 +57,14 @@ class Process extends Command
 
         //$this->outputLine("found <info>%s</info> tasks:", [$count]);
         // $output->writeln("found ... >>>", $count, "<<<");
-        $output->writeln($count);
+//        $output->writeln($count, ' tasks found');
 
+        $i = 0;
         foreach ($storedTasks as $storedTask) {
+            $output->writeln("doProcessTask ".strval($i)."/".$count);
 
-            $output->writeln("doProcessTask");
-            $this->videoProcessor->doProcessTask($storedTask);
+            $this->videoProcessor->doProcessTask($storedTask, $i);
+
             $output->writeln("after doProcessTask");
 
             $timePassed = time() - $_SERVER['REQUEST_TIME'];
@@ -82,6 +80,8 @@ class Process extends Command
             // $this->output->progressAdvance();
             // not working like this
             //$output->progressAdvance();
+
+            $i++;
 
         }
         // $this->output->progressFinish();

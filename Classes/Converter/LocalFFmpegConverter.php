@@ -107,7 +107,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
             var_dump("thumbnail_jpg", $thumbnail_jpg);
 
 
-            // ToDo hard codeed base path
+            // ToDo hard coded base path
             $frame->save("/var/www/vhosts/kukurtihar.com/t3v11.kukurtihar.com/public/fileadmin" . $thumbnail_jpg);
 
             var_dump("poster_jpg", $poster_jpg);
@@ -137,6 +137,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
 
         $ffprobe = $this->runner->getCommand('ffprobe');
+
         if (!is_string($ffprobe)) {
             throw new \RuntimeException("ffprobe not found.");
         }
@@ -179,6 +180,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
 
         $ffmpeg = $this->runner->getCommand('ffmpeg');
+
         if (!is_string($ffmpeg)) {
             throw new \RuntimeException("ffmpeg not found.");
         }
@@ -187,6 +189,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
         // this is because i assume you are using it on the webserver
         // which should care more about delivering pages than about converting the video
         // if the utility is not found than just ignore this priority shift
+
         $nice = $this->runner->getCommand('nice');
         if (is_string($nice)) {
             $ffmpeg = "$nice $ffmpeg";
@@ -199,6 +202,7 @@ class LocalFFmpegConverter extends AbstractVideoConverter
         // $logger->debug("[LocalFFmpegConverter] run ffmpeg command", ['command' => $commandStr] );
         $logger->debug(sprintf('[LocalFFmpegConverter] run ffmpeg command %s', $commandStr ) );
         $process = $this->runner->run($commandStr);
+
         $output = '';
         foreach ($process as $line) {
             $output .= $line;

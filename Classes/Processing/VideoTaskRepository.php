@@ -101,6 +101,9 @@ class VideoTaskRepository implements SingletonInterface
         $qb->setMaxResults(1);
         $row = $qb->execute()->fetch();
 
+        // var_dump($row);die();
+
+
 //        \TYPO3\CMS\Core\Utility\DebugUtility::debug($row);
 
         if (!$row) {
@@ -132,6 +135,8 @@ class VideoTaskRepository implements SingletonInterface
             return null;
         }
 
+        var_dump($this->serializeTask($row));
+
         return $this->serializeTask($row);
     }
 
@@ -155,9 +160,16 @@ class VideoTaskRepository implements SingletonInterface
         return array_map([$this, 'serializeTask'], $rows);
     }
 
+
+    /**
+     *
+     * @param array $row
+     *
+     * @return VideoProcessingTask
+     */
+
     protected function serializeTask(array $row): VideoProcessingTask
     {
-
         if (isset($this->tasks[$row['uid']])) {
             $this->tasks[$row['uid']]->setDatabaseRow($row);
             return $this->tasks[$row['uid']];
@@ -176,15 +188,38 @@ class VideoTaskRepository implements SingletonInterface
 
             $success = $qb->execute() > 0;
             if ($success) {
-                // var_dump("delete sucess");
+                // var_dump("delete success");
+
                 unset($this->tasks[$uid]);
             } else {
                 // var_dump("delete NO sucess");
             }
-            return False; // should retunr Task, which we do not have here, when file issing
         }
 
-        $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($row['file']);
+
+        if (file_exists($row['file'])) {
+            $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($row['file']);
+        } else {
+            // throw new \RuntimeException("File missing " . $row['file'] . ", ...");
+
+            $qb = $this->createQueryBuilder();
+            $qb->delete(self::TABLE_NAME);
+            $qb->where($qb->expr()->eq('uid', $qb->createNamedParameter($uid, Connection::PARAM_INT)));
+
+            $success = $qb->execute() > 0;
+            if ($success) {
+                // var_dump("delete success");
+                // unset($this->tasks[$uid]);
+            } else {
+                // var_dump("delete NO sucess");
+
+
+            }
+
+            // return null;
+
+        }
+
         $configuration = unserialize($row['configuration']);
         $repository = GeneralUtility::makeInstance(ProcessedFileRepository::class);
         $processedFile = $repository->findOneByOriginalFileAndTaskTypeAndConfiguration($file, 'Video.CropScale', $configuration);

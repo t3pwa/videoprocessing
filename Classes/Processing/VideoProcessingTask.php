@@ -20,8 +20,8 @@ class VideoProcessingTask extends AbstractTask
     // const TYPE = 'Videoprocessing';
     const NAME = 'CropScale';
     const STATUS_NEW = 'new';
-
     const STATUS_PROCESSING = 'processing';
+    const STATUS_STUCK = 'stuck';
     const STATUS_FINISHED = 'finished';
     const STATUS_FAILED = 'failed';
 
@@ -69,9 +69,6 @@ class VideoProcessingTask extends AbstractTask
         array $configuration
     )
     {
-
-        // print ("Video processing task constructor ");
-
         $this->targetFile = $targetFile;
         $this->sourceFile = $targetFile->getOriginalFile();
         $this->configuration = $configuration;
@@ -114,20 +111,29 @@ class VideoProcessingTask extends AbstractTask
 
     public function getStatus(): string
     {
+
+
+        // not executed/new
         if (!$this->isExecuted()) {
             return self::STATUS_NEW;
-
         }
-/*
+
+
         if ($this->isExecuted()) {
             // return self::STATUS_PROCESSING;
             // return self::STATUS_NEW;
             return self::STATUS_FINISHED;
-
         }
-*/
+
+        if ($this->isExecuted()) {
+            $age = time() - array_slice($this->progress, -2)[0]['timestamp'];
+            if ($age > 0.5) {
+                return self::STATUS_STUCK;
+            }
+        }
 
 
+        // successful/finished? ask last
         if ($this->isSuccessful()) {
             return self::STATUS_FINISHED;
         }
@@ -145,6 +151,12 @@ class VideoProcessingTask extends AbstractTask
 
             case self::STATUS_PROCESSING:
                 $this->executed = true;
+                $this->successful = false;
+                break;
+
+            case self::STATUS_STUCK:
+                $this->executed = true;
+                $this->stuck = true;
                 $this->successful = false;
                 break;
 
@@ -186,6 +198,7 @@ class VideoProcessingTask extends AbstractTask
 
         $newEntry = [
             'timestamp' => $timestamp,
+            // Do wee need this precision?
             'progress' => round($progress, 5),
         ];
 
@@ -243,7 +256,7 @@ class VideoProcessingTask extends AbstractTask
             return 0;
         }
 
-        return end($this->progress)['timestamp'];
+        return (int)end($this->progress)['timestamp'];
     }
 
     public function getProcessingDuration(): float

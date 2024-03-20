@@ -102,10 +102,10 @@ class VideoMetadataExtractor implements ExtractorInterface
         }
 
         // if with and height are already known do nothing
-        if ($file->hasProperty('width') || $file->hasProperty('height')) {
-            return false;
-        }
-
+        // do this always for now
+        // if ($file->hasProperty('width') || $file->hasProperty('height')) {
+//            return false;
+//        }
         return TypeUtility::inList($file->getMimeType(), TypeUtility::VIDEO_MIME_TYPES);
     }
 
@@ -123,16 +123,175 @@ class VideoMetadataExtractor implements ExtractorInterface
     {
         $raw = $this->getID3->analyze($file->getForLocalProcessing(false), $file->getSize(), $file->getName());
 
-        if (!empty($raw['video']['resolution_x'])) {
-            $previousExtractedData['width'] = intval($raw['video']['resolution_x']);
+        // in order of appearance, better sorted by relevance
+
+        if (!empty($raw['filesize'])) {
+            $previousExtractedData['filesize'] = intval($raw['filesize']);
+        }
+        if (!empty($raw['filepath'])) {
+            $previousExtractedData['filepath'] = strval($raw['filepath']);
+        }
+        if (!empty($raw['filename'])) {
+            $previousExtractedData['filename'] = strval($raw['filename']);
+        }
+        if (!empty($raw['filenamepath'])) {
+            $previousExtractedData['filenamepath'] = strval($raw['filenamepath']);
         }
 
-        if (!empty($raw['video']['resolution_y'])) {
-            $previousExtractedData['height'] = intval($raw['video']['resolution_y']);
+        if (!empty($raw['avdataoffset'])) {
+            $previousExtractedData['avdataoffset'] = intval($raw['avdataoffset']);
+        }
+        if (!empty($raw['avdataend'])) {
+            $previousExtractedData['avdataend'] = intval($raw['avdataend']);
         }
 
-        // TODO there is probably more meta data available
+        if (!empty($raw['fileformat'])) {
+            $previousExtractedData['fileformat'] = strval($raw['fileformat']);
+        }
 
+
+        // ToDo keep orginal structure/ array format
+//        if (empty($raw["video"])) {
+//        $previousExtractedData["video"] = [];
+//        }
+
+            if (!empty($raw['video']['dataformat'])) {
+                $previousExtractedData['dataformat'] = strval($raw['video']['dataformat']);
+                $previousExtractedData['video']['dataformat'] = strval($raw['video']['dataformat']);
+            }
+            if (!empty($raw['video']['rotate'])) {
+                $previousExtractedData['rotate'] = intval($raw['video']['rotate']);
+    //            $previousExtractedData['video']['rotate'] = intval($raw['video']['rotate']);
+            }
+            if (!empty($raw['video']['resolution_x'])) {
+                $previousExtractedData['width'] = intval($raw['video']['resolution_x']);
+                $previousExtractedData['video']['resolution_x'] = intval($raw['video']['resolution_x']);
+            }
+            if (!empty($raw['video']['resolution_y'])) {
+                $previousExtractedData['height'] = intval($raw['video']['resolution_y']);
+                $previousExtractedData['video']['resolution_y'] = intval($raw['video']['resolution_y']);
+
+            }
+            if (!empty($raw['video']['fourcc'])) {
+                $previousExtractedData['fourcc'] = strval($raw['video']['fourcc']);
+                $previousExtractedData['video']['fourcc'] = intval($raw['video']['fourcc']);
+            }
+            if (!empty($raw['video']['fourcc_lookup'])) {
+                $previousExtractedData['fourcc_lookup'] = strval($raw['video']['fourcc_lookup']);
+                $previousExtractedData['video']['fourcc_lookup'] = strval($raw['video']['fourcc_lookup']);
+            }
+            if (!empty($raw['video']['framerate'])) {
+                $previousExtractedData['framerate'] = intval($raw['video']['framerate']);
+                $previousExtractedData['video']['framerate'] = intval($raw['video']['framerate']);
+
+            }
+
+
+
+
+        if (!empty($raw['comments']['language'])) {
+            // ToDo check against some constants list, static-info-table, check for "und", undefined, empty and null
+
+            // comments is array
+//            $previousExtractedData['language'] = strval($raw['comments']['language']);
+
+        }
+
+        if (!empty($raw['encoding'])) {
+            // ToDo Check against constants
+            $previousExtractedData['encoding'] = strval($raw['encoding']);
+        }
+
+        if (!empty($raw['mime_type'])) {
+            $previousExtractedData['mime_type'] = strval($raw['mime_type']);
+
+        }
+
+/*
+        if (empty($raw["quicktime"])) {
+            $previousExtractedData["quicktime"] = [];
+        }
+*/
+
+
+        if (!empty($raw['quicktime']['hinting'])) {
+            $previousExtractedData['quicktime']['hinting'] = boolval($raw['quicktime']['hinting']);
+        }
+        if (!empty($raw['quicktime']['controller'])) {
+            $previousExtractedData['quicktime']['controller'] = strval($raw['quicktime']['controller'] );
+        }
+
+        if (!empty($raw['quicktime']['ftyp'])) {
+            $previousExtractedData['quicktime']['ftyp'] = array(( $raw['quicktime']['ftyp'] ));
+        }
+
+
+
+        /*
+         *
+
+          ["quicktime"]=>          array(9) {
+            ["hinting"]=>            bool(false)
+            ["controller"]=>            string(8) "standard"
+
+                ["ftyp"]=>            array(7) {
+                    ["hierarchy"]=>              string(4) "ftyp"
+                    ["name"]=>              string(4) "ftyp"
+                    ["size"]=>              int(32)
+                    ["offset"]=>              int(0)
+                    ["signature"]=>              string(4) "mp42"
+                    ["unknown_1"]=>              int(0)
+                    ["fourcc"]=>              string(4) "mp42"
+               }
+
+            ["timestamps_unix"]=>            array(2) {
+                    ["create"]=>              array(3) {
+                        ["moov mvhd"]=>                int(1640126674)
+                        ["moov trak tkhd"]=>                int(1640126674)
+                        ["moov trak mdia mdhd"]=>                int(1640126674)
+                    }
+                    ["modify"]=>            array(3) {
+                        ["moov mvhd"]=>                int(1640126674)
+                ["moov trak tkhd"]=>                int(1640126674)
+                ["moov trak mdia mdhd"]=>                int(1640126674)
+              }
+            }
+            ["time_scale"]=>            int(24)
+            ["display_scale"]=>            float(1)
+
+            ["video"]=>            array(5) {
+              ["rotate"]=>              int(0)
+              ["resolution_x"]=>              int(1920)
+              ["resolution_y"]=>              int(1080)
+              ["frame_rate"]=>              float(24)
+              ["frame_count"]=>              int(131)
+            }
+            ["stts_framecount"]=>
+            array(1) {
+                    [0]=>              int(131)
+            }
+            ["mdat"]=>
+            array(4) {
+                    ["hierarchy"]=>              string(4) "mdat"
+                    ["name"]=>              string(4) "mdat"
+                    ["size"]=>              int(3354459)
+              ["offset"]=>              int(2564)
+            }
+          }
+
+          ["playtime_seconds"]=>          float(5.458333333333333)
+          ["bitrate"]=>          float(4916447.267175573)
+        */
+
+        if (!empty($raw['playtime_seconds'])) {
+            $previousExtractedData['playtime_seconds'] = floatval($raw['playtime_seconds']);
+        }
+        if (!empty($raw['bitrate'])) {
+            $previousExtractedData['bitrate'] = floatval($raw['bitrate']);
+        }
+
+        // var_dump($raw, $previousExtractedData);
+        // ToDo dump return in PhpFFmpegConverter process()
         return $previousExtractedData;
     }
 }

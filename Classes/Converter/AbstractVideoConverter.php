@@ -15,17 +15,23 @@ abstract class AbstractVideoConverter implements VideoConverterInterface
 
     protected function finishTask(VideoProcessingTask $task, string $tempFilename, array $streams)
     {
-        // the name has to be set before anything else or else random errors
+        // the name has to be set before anything
         $processedFile = $task->getTargetFile();
         $processedFile->setName($task->getTargetFilename());
 
-        // the properties also have to be set before writing the file or else... guess
+        // the properties also have to be set before writing the file
         $formatRepository = GeneralUtility::makeInstance(FormatRepository::class);
         $properties = $formatRepository->getProperties($task->getConfiguration(), $streams);
         $processedFile->updateProperties($properties + ['checksum' => $task->getConfigurationChecksum()]);
 
         // now actually update the file
-        $processedFile->updateWithLocalFile($tempFilename);
+        var_dump("$tempFilename with extesnion?", $tempFilename);
+//        var_dump($task->getConfiguration()['format']);
+//        $format = $task->getConfiguration()['format'];
+
+        $processedFile->updateWithLocalFile($tempFilename.'.'.$task->getConfiguration()['format']);
+        // $processedFile->updateWithLocalFile($tempFilename);
+
         $task->setExecuted(true);
 
         // return $processedFile;

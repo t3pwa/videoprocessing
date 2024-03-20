@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Faeb\Videoprocessing\EventListener;
 
-// use Faeb\Videoprocessing\Processing\VideoProcessor;
+use Faeb\Videoprocessing\Processing\VideoProcessor;
 use Faeb\Videoprocessing\VideoMetadataExtractor;
 use TYPO3\CMS\Core\Utility\DebugUtility;
 
@@ -21,16 +21,11 @@ final class EnrichFileMetaDataEvent
 
     public function __invoke(EnrichFileMetaDataEvent $event): void
     {
-        // \TYPO3\CMS\Core\Utility\DebugUtility::debug("EnrichFileMetaDataEvent");
+        \TYPO3\CMS\Core\Utility\DebugUtility::debug("EnrichFileMetaDataEvent");
 
-
-
-        /*
         if (!$file instanceof File) {
             return;
         }
-        */
-
 
     }
 }
